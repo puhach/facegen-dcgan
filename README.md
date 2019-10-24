@@ -1,2 +1,2 @@
-# facegen-dcgan
-Face generator based on DCGAN.
+# Face Generator
+This project generates new faces using a Deep Convolutional Generative Adversarial Network (DCGAN). 
