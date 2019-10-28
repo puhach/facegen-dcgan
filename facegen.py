@@ -3,6 +3,24 @@ import torch
 from torchvision import datasets
 from torchvision import transforms
 
+import matplotlib.pyplot as plt
+import numpy as np
+
+def preview(dataloader, plot_size):
+    
+    # obtain one batch of training images
+    dataiter = iter(dataloader)
+    images, _ = dataiter.next() # _ for no labels
+
+    # plot the images in the batch, along with the corresponding labels
+    fig = plt.figure(figsize=(20, 4))
+    
+    for idx in np.arange(plot_size):
+        ax = fig.add_subplot(2, plot_size/2, idx+1, xticks=[], yticks=[])
+        ax.imshow(np.transpose(images[idx], (1, 2, 0)))
+
+    plt.show()
+
 
 def get_dataloader(batch_size, image_size, data_dir):
     """
@@ -20,6 +38,8 @@ def get_dataloader(batch_size, image_size, data_dir):
 
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=0)
     
+    preview(dataloader, 20)
+
     return dataloader
 
 
