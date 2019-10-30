@@ -6,7 +6,7 @@ from torchvision import transforms
 import matplotlib.pyplot as plt
 import numpy as np
 
-import math
+#import math
 
 def preview(dataloader, plot_size):
     """
@@ -50,16 +50,32 @@ def get_dataloader(batch_size, image_size, data_dir):
 
     dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=0)
     
-    preview(dataloader, 20)
-
     return dataloader
 
+def scale(x, feature_range=(-1, 1)):
+    """
+    Scale takes in an image and returns that image, scaled with a feature_range of pixel values from -1 to 1. 
+    :param x: The input image. This function assumes that it has already been scaled to (0, 1).
+    """
+    # scale to feature_range and return scaled x    
+    return feature_range[0] + x*(feature_range[1] - feature_range[0])
 
 
 def train(args):
+
     print("Loading data")
-    #print(f"training for {args.epochs} epochs with a learning rate = {args.lr}")
+
     dataloader = get_dataloader(batch_size=64, image_size=32, data_dir='celeba')
+
+    preview(dataloader, 20)
+
+    imgs, _ = iter(dataloader).next()
+    scaled_imgs = scale(imgs)
+    print('Min: ', scaled_imgs.min())
+    print('Max: ', scaled_imgs.max())
+
+    #print(f"training for {args.epochs} epochs with a learning rate = {args.lr}")
+
 
 
 def generate(args):
