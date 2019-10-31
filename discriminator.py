@@ -1,6 +1,40 @@
 import torch.nn as nn
 import torch.nn.functional as F
 
+
+def conv(in_channels, out_channels, kernel_size, stride, padding, activation, batch_norm=True):
+    layers = []
+    layers.append(nn.Conv2d(in_channels=in_channels, out_channels=out_channels, 
+                            kernel_size=kernel_size, stride=stride, padding=padding,
+                            bias = not batch_norm # disable bias only in case of batch normalization
+                           ))
+    
+    if batch_norm:
+        layers.append(nn.BatchNorm2d(out_channels))
+
+    if activation:
+        #print(type(activation))
+        layers.append(activation)
+        
+#     if activation is None or activation == '':
+#         return layers
+        
+#     activations = {
+#         'relu': nn.ReLU(),
+#         'leaky_relu': nn.LeakyReLU(negative_slope=0.2),
+#         'sigmoid': nn.Sigmoid(),
+#         # ! Unfortunately PyTorch version from the workspace doesn't have the Identity function
+#         #'': nn.Identity() # no activation
+#     }
+    
+#     try:
+#         layers.append(activations[activation.lower()])
+#     except KeyError:
+#         print(f"Unknown activation function: '{activation}'")
+#         raise
+        
+    return nn.Sequential(*layers)
+
 class Discriminator(nn.Module):
 
     def __init__(self, conv_dim, in_channels=3, image_size=32, depth=5):
@@ -24,3 +58,5 @@ class Discriminator(nn.Module):
         self.conv_layers = nn.Sequential(*conv_blocks)
         
         self.out_layer = nn.Linear(in_features=in_channels*image_size*image_size, out_features=1)
+
+
