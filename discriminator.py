@@ -38,7 +38,7 @@ def conv(in_channels, out_channels, kernel_size, stride, padding, activation, ba
 class Discriminator(nn.Module):
 
     def __init__(self, conv_dim, in_channels=3, image_size=32, depth=5):
-        
+
         super(Discriminator, self).__init__()
 
         conv_blocks = []
@@ -60,3 +60,17 @@ class Discriminator(nn.Module):
         self.out_layer = nn.Linear(in_features=in_channels*image_size*image_size, out_features=1)
 
 
+    def forward(self, x):
+        
+        # 1. (3,32,32) -> (64,16,16)
+        # 2. (64,16,16) -> (128,8,8)
+        # 3. (128,8,8) -> (256,4,4)
+        # 4. (256,4,4) -> (512,2,2)
+        # 5. (512,2,2) -> (1,1,1)
+        x = self.conv_layers(x)
+        #print("x':", x.shape)
+        #x = x.view(x.shape[0], 1) # remove extra dimensions for the convolutional output layer
+        x = x.view(x.shape[0], -1) # flatten (in case of fully connected output layer)
+        x = F.sigmoid(self.out_layer(x))
+        #print("squeezed:", x.shape)
+        return x
