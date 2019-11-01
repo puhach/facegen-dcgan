@@ -3,6 +3,18 @@ import torch.nn.functional as F
 
 
 def conv(in_channels, out_channels, kernel_size, stride, padding, activation, batch_norm=True):
+    """
+    A helper function combining a convolutional layer, batch normalization, and activation.
+    :param in_channels: The number of channels in the input.
+    :param out_channels: The number of channels produced by the convolution.
+    :param kernel_size: The size of the convolving kernel.
+    :param stride: The stride of the convolution.
+    :param padding: Zero padding added to both sides of the input.
+    :param activation: If not None, adds an element-wise activation to the resulting sequence of layers.
+    :param batch_norm: Specifies whether to apply batch normalization to the output of the convolution.
+    :return: A sequential container of layers.
+    """
+
     layers = []
     layers.append(nn.Conv2d(in_channels=in_channels, out_channels=out_channels, 
                             kernel_size=kernel_size, stride=stride, padding=padding,
@@ -35,9 +47,19 @@ def conv(in_channels, out_channels, kernel_size, stride, padding, activation, ba
         
     return nn.Sequential(*layers)
 
+
 class Discriminator(nn.Module):
 
     def __init__(self, conv_dim, in_channels=3, image_size=32, depth=5):
+        """
+        Initializes the Discriminator. This is a convolutional classifier only without any maxpooling layers. 
+        To deal with this complex data a deep network with normalization is used. 
+
+        :param conv_dim: The depth of the first convolutional layer.
+        :param in_channels: The number of channels in the input image.
+        :param image_size: The size of input images (single number).
+        :param depth: The number of layers.
+        """
 
         super(Discriminator, self).__init__()
 
@@ -61,7 +83,12 @@ class Discriminator(nn.Module):
 
 
     def forward(self, x):
-        
+        """
+        Forward propagation of the discriminator.
+        :param x: The input to the neural network.     
+        :return: Discriminator logits.
+        """
+
         # 1. (3,32,32) -> (64,16,16)
         # 2. (64,16,16) -> (128,8,8)
         # 3. (128,8,8) -> (256,4,4)
