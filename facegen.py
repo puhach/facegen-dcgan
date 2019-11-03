@@ -61,6 +61,26 @@ def scale(x, feature_range=(-1, 1)):
     return feature_range[0] + x*(feature_range[1] - feature_range[0])
 
 
+def weights_init_normal(m):
+    """
+    Applies initial weights to certain layers in the model.
+    The weights are taken from a normal distribution with mean = 0, std dev = 0.02.
+    :param m: A module or layer in the network.
+    """
+    
+    # classname will be something like:
+    # `Conv`, `BatchNorm2d`, `Linear`, etc.
+    classname = m.__class__.__name__
+    
+    # Apply initial weights to convolutional and linear layers
+    if isinstance(m, nn.Linear) or isinstance(m, nn.Conv2d) or isinstance(m, nn.ConvTranspose2d):
+        print(classname)
+        if hasattr(m, 'weight') and m.weight is not None:
+            nn.init.normal_(m.weight, mean=0, std=0.02)
+        if hasattr(m, 'bias') and m.bias is not None:
+            nn.init.normal_(m.bias, mean=0, std=0.02)
+ 
+
 def train(args):
 
     print("Loading data")
