@@ -1,12 +1,13 @@
 import argparse
 import torch
+import torch.nn as nn
 from torchvision import datasets
 from torchvision import transforms
 import matplotlib.pyplot as plt
 import numpy as np
 from discriminator import Discriminator
 from generator import Generator
-#import math
+
 
 def preview(dataloader, plot_size):
     """
