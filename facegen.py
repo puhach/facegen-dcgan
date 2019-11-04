@@ -2,10 +2,10 @@ import argparse
 import torch
 from torchvision import datasets
 from torchvision import transforms
-
 import matplotlib.pyplot as plt
 import numpy as np
-
+from discriminator import Discriminator
+from generator import Generator
 #import math
 
 def preview(dataloader, plot_size):
@@ -67,7 +67,7 @@ def weights_init_normal(m):
     The weights are taken from a normal distribution with mean = 0, std dev = 0.02.
     :param m: A module or layer in the network.
     """
-    
+
     # classname will be something like:
     # `Conv`, `BatchNorm2d`, `Linear`, etc.
     classname = m.__class__.__name__
@@ -80,6 +80,22 @@ def weights_init_normal(m):
         if hasattr(m, 'bias') and m.bias is not None:
             nn.init.normal_(m.bias, mean=0, std=0.02)
  
+
+def build_network(d_conv_dim, g_conv_dim, z_size):
+    # define discriminator and generator
+    D = Discriminator(d_conv_dim)
+    G = Generator(z_size=z_size, conv_dim=g_conv_dim)
+
+    # initialize model weights
+    D.apply(weights_init_normal)
+    G.apply(weights_init_normal)
+
+    print(D)
+    print()
+    print(G)
+    
+    return D, G
+
 
 def train(args):
 
@@ -95,7 +111,7 @@ def train(args):
     print('Max: ', scaled_imgs.max())
 
     #print(f"training for {args.epochs} epochs with a learning rate = {args.lr}")
-
+    D, G = build_network(d_conv_dim=64, g_conv_dim=64, z_size=128)
 
 
 def generate(args):
