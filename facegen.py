@@ -114,6 +114,14 @@ def train(args):
     #print(f"training for {args.epochs} epochs with a learning rate = {args.lr}")
     D, G = build_network(d_conv_dim=64, g_conv_dim=64, z_size=128)
 
+    
+    # Check for a GPU
+    train_on_gpu = torch.cuda.is_available()
+    if not train_on_gpu:
+        print('No GPU found. Please use a GPU to train your neural network.')
+    else:
+        print('Training on GPU!')
+
 
 def generate(args):
     #print(f"generate to {args.path}")
