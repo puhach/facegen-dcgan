@@ -98,6 +98,25 @@ def build_network(d_conv_dim, g_conv_dim, z_size):
     return D, G
 
 
+def real_loss(D_out):
+    """
+    Calculates how close discriminator outputs are to being real.
+    :param D_out: Discriminator logits.
+    :return: Real loss.
+    """    
+    loss = torch.mean((D_out - 1)**2)
+    return loss
+
+def fake_loss(D_out):
+    """
+    Calculates how close discriminator outputs are to being fake.
+    :param D_out: Discriminator logits.
+    :return: Fake loss.
+    """
+    loss = torch.mean((D_out - 0)**2)
+    return loss
+
+
 def train(args):
 
     print("Loading data")
@@ -121,6 +140,8 @@ def train(args):
         print('No GPU found. Please use a GPU to train your neural network.')
     else:
         print('Training on GPU!')
+
+
 
 
 def generate(args):
