@@ -1,6 +1,7 @@
 import argparse
 import torch
 import torch.nn as nn
+import torch.optim as optim
 from torchvision import datasets
 from torchvision import transforms
 import matplotlib.pyplot as plt
@@ -133,6 +134,9 @@ def train(args):
     #print(f"training for {args.epochs} epochs with a learning rate = {args.lr}")
     D, G = build_network(d_conv_dim=64, g_conv_dim=64, z_size=128)
 
+    # Create optimizers for the discriminator D and generator G
+    d_optimizer = optim.Adam(D.parameters(), lr=0.0002, betas=[0.5, 0.999])
+    g_optimizer = optim.Adam(G.parameters(), lr=0.0002, betas=[0.5, 0.999])
     
     # Check for a GPU
     train_on_gpu = torch.cuda.is_available()
