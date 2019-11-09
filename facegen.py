@@ -117,20 +117,28 @@ def fake_loss(D_out):
     loss = torch.mean((D_out - 0)**2)
     return loss
 
-def run_training(D, G, n_epochs, print_every=50):
+def run_training(D, G, d_optimizer, g_optimizer, dataloader, z_size, n_epochs, train_on_gpu, print_every=50):
     """
     Trains the adversarial networks for the specified number of epochs.
     :param D: The discriminator network.
     :param G: The generator network.
+    :param d_optimizer: The discriminator optimizer.
+    :param g_optimizer: The generator optimizer.
+    :param dataloader: Provides an iterable over the training set.
+    :param z_size: The latent vector size.
     :param n_epochs: The number of epochs to train for.
+    :param train_on_gpu: Determines whether to train the networks on GPU (faster).
     :param print_every: Controls how often to print and record the models' losses.
     :return: D and G losses.
     """
     
     # move models to GPU
     if train_on_gpu:
+        print('Training on GPU...')
         D.cuda()
         G.cuda()
+    else:
+        print('CUDA is not available. Training on CPU...')
 
     # keep track of loss and generated, "fake" samples
     samples = []
@@ -149,7 +157,7 @@ def run_training(D, G, n_epochs, print_every=50):
     for epoch in range(n_epochs):
 
         # batch training loop
-        for batch_i, (real_images, _) in enumerate(celeba_train_loader):
+        for batch_i, (real_images, _) in enumerate(dataloader):
 
             batch_size = real_images.size(0)
             real_images = scale(real_images)
@@ -216,24 +224,24 @@ def train(args):
 
     preview(dataloader, 20)
 
-    imgs, _ = iter(dataloader).next()
-    scaled_imgs = scale(imgs)
-    print('Min: ', scaled_imgs.min())
-    print('Max: ', scaled_imgs.max())
+    #imgs, _ = iter(dataloader).next()
+    #scaled_imgs = scale(imgs)
+    #print(f'Min: {scaled_imgs.min()} Max: {scaled_imgs.max()}')
 
     #print(f"training for {args.epochs} epochs with a learning rate = {args.lr}")
-    D, G = build_network(d_conv_dim=64, g_conv_dim=64, z_size=128)
+    
+    z_size = 128
+
+    D, G = build_network(d_conv_dim=64, g_conv_dim=64, z_size=z_size)
 
     # Create optimizers for the discriminator D and generator G
     d_optimizer = optim.Adam(D.parameters(), lr=0.0002, betas=[0.5, 0.999])
     g_optimizer = optim.Adam(G.parameters(), lr=0.0002, betas=[0.5, 0.999])
     
-    # Check for a GPU
-    train_on_gpu = torch.cuda.is_available()
-    if not train_on_gpu:
-        print('No GPU found. Please use a GPU to train your neural network.')
-    else:
-        print('Training on GPU!')
+    n_epochs = args.epochs
+
+    losses = run_training(D, G, d_optimizer, g_optimizer, dataloader, 
+        z_size=z_size, n_epochs=n_epochs, train_on_gpu=torch.cuda.is_available())
 
 
 
@@ -241,6 +249,8 @@ def train(args):
 def generate(args):
     #print(f"generate to {args.path}")
     print(args.path)
+
+
 
 # create the top-level parser
 parser = argparse.ArgumentParser()
