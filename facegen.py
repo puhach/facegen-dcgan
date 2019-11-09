@@ -2,65 +2,12 @@ import argparse
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from torchvision import datasets
-from torchvision import transforms
-import matplotlib.pyplot as plt
 import numpy as np
+import facedata
 from discriminator import Discriminator
 from generator import Generator
 
 
-def preview(dataloader, plot_size):
-    """
-    Reads one batch of images from the dataloader and displays a few of them in a preview window.
-    :param dataloader: A dataloader object to read the images from.
-    :param plot_size: The number of images to preview (no more than the batch size).
-    """
-
-    # obtain one batch of training images
-    dataiter = iter(dataloader)
-    images, _ = dataiter.next() # _ for no labels
-
-    # plot the images in the batch, along with the corresponding labels
-    fig = plt.figure(figsize=(12, 4))
-    
-    plot_size = min(len(images), plot_size)
-    #plot_size = len(images)
-    #n = int(math.sqrt(plot_size))
-
-    for idx in np.arange(plot_size):
-        ax = fig.add_subplot(2, plot_size/2, idx+1, xticks=[], yticks=[])
-        #ax = fig.add_subplot(n, int(math.ceil(plot_size/n)), idx+1, xticks=[], yticks=[])
-        ax.imshow(np.transpose(images[idx], (1, 2, 0)))
-
-    plt.show()
-
-
-def get_dataloader(batch_size, image_size, data_dir):
-    """
-    Batch the neural network data using DataLoader
-    :param batch_size: The number of images in a batch
-    :param img_size: The square size to resize the input images to
-    :param data_dir: Directory where image data is located
-    :return: DataLoader with batched data
-    """
-    
-    preprocessing = transforms.Compose([transforms.Resize((image_size, image_size)),                                         
-                                        transforms.ToTensor()])
-
-    dataset = datasets.ImageFolder(root=data_dir, transform=preprocessing)
-
-    dataloader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=0)
-    
-    return dataloader
-
-def scale(x, feature_range=(-1, 1)):
-    """
-    Scale takes in an image and returns that image, scaled with a feature_range of pixel values from -1 to 1. 
-    :param x: The input image. This function assumes that it has already been scaled to (0, 1).
-    """
-    # scale to feature_range and return scaled x    
-    return feature_range[0] + x*(feature_range[1] - feature_range[0])
 
 
 def weights_init_normal(m):
@@ -160,7 +107,7 @@ def run_training(D, G, d_optimizer, g_optimizer, dataloader, z_size, n_epochs, t
         for batch_i, (real_images, _) in enumerate(dataloader):
 
             batch_size = real_images.size(0)
-            real_images = scale(real_images)
+            real_images = facedata.scale(real_images)
 
             if train_on_gpu:
                 real_images = real_images.cuda()
@@ -220,9 +167,9 @@ def train(args):
 
     print("Loading data")
 
-    dataloader = get_dataloader(batch_size=64, image_size=32, data_dir='celeba')
+    dataloader = facedata.get_data_loader(batch_size=64, image_size=32, data_dir='celeba')
 
-    preview(dataloader, 20)
+    facedata.preview(dataloader, 20)
 
     #imgs, _ = iter(dataloader).next()
     #scaled_imgs = scale(imgs)
