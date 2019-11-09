@@ -1,5 +1,6 @@
+import torch
 import torch.nn as nn
-import torch.nn.functional as F
+#import torch.nn.functional as F
 
 
 def conv(in_channels, out_channels, kernel_size, stride, padding, activation, batch_norm=True):
@@ -98,6 +99,7 @@ class Discriminator(nn.Module):
         #print("x':", x.shape)
         #x = x.view(x.shape[0], 1) # remove extra dimensions for the convolutional output layer
         x = x.view(x.shape[0], -1) # flatten (in case of fully connected output layer)
-        x = F.sigmoid(self.out_layer(x))
+        #x = F.sigmoid(self.out_layer(x))
+        x = torch.sigmoid(self.out_layer(x))
         #print("squeezed:", x.shape)
         return x

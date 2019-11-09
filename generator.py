@@ -1,5 +1,6 @@
+import torch
 import torch.nn as nn
-import torch.nn.functional as F
+#import torch.nn.functional as F
 
 def deconv(in_channels, out_channels, kernel_size, stride, padding, activation=None, batch_norm=True):
     """
@@ -88,5 +89,6 @@ class Generator(nn.Module):
         # 2. (256,4,4) -> (128,8,8)
         # 3. (128,8,8) -> (64,16,16)
         # 4. (64,16,16) -> (3,32,32)
-        x = F.tanh(self.deconv_layers(x))
+        x = torch.tanh(self.deconv_layers(x))
+        #x = F.tanh(self.deconv_layers(x))
         return x
