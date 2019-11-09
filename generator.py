@@ -44,6 +44,12 @@ class Generator(nn.Module):
         """
         super(Generator, self).__init__()
 
+        # save the initialization parameters
+        self.z_size = z_size
+        self.conv_dim = conv_dim
+        self.target_size = target_size
+        self.depth = depth
+
         # calculate the initial image size on the basis of the target image size 
         # and the depth of transpose convolutions
         self.initial_size = target_size // (2**depth)
@@ -55,7 +61,7 @@ class Generator(nn.Module):
         cur_channels = self.in_channels
         image_size = self.initial_size
         deconv_blocks = []
-        for i in range(depth-1):
+        for _ in range(depth-1):
             deconv_blocks.append(deconv(in_channels=cur_channels, out_channels=cur_channels//2, 
                                        kernel_size=4, stride=2, padding=1, 
                                        activation = nn.ReLU(), batch_norm = True))
@@ -92,3 +98,9 @@ class Generator(nn.Module):
         x = torch.tanh(self.deconv_layers(x))
         #x = F.tanh(self.deconv_layers(x))
         return x
+
+    def get_init_params(self):
+        """
+        Returns initialization parameters of the generator as a tuple.
+        """
+        return (self.z_size, self.conv_dim, self.target_size, self.depth)

@@ -64,6 +64,12 @@ class Discriminator(nn.Module):
 
         super(Discriminator, self).__init__()
 
+        # save the initialization parameters
+        self.conv_dim = conv_dim
+        self.in_channels = in_channels
+        self.image_size = image_size
+        self.depth = depth
+
         conv_blocks = []
         for i in range(depth-1):
             conv_blocks.append(conv(in_channels, conv_dim, kernel_size=4, stride=2, padding=1,
@@ -103,3 +109,9 @@ class Discriminator(nn.Module):
         x = torch.sigmoid(self.out_layer(x))
         #print("squeezed:", x.shape)
         return x
+
+    def get_init_params(self):
+        """
+        Returns initialization parameters of the discriminator as a tuple.
+        """
+        return (self.conv_dim, self.in_channels, self.image_size, self.depth)
