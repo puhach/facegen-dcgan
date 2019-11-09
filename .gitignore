@@ -1,5 +1,4 @@
 celeba/*
 .vscode/.ropeproject/config.py
 .vscode/.ropeproject/objectdb
-__pycache__/discriminator.cpython-35.pyc
-__pycache__/generator.cpython-35.pyc
+__pycache__/*
