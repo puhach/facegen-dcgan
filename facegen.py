@@ -4,6 +4,7 @@ import torch.nn as nn
 import torch.optim as optim
 import numpy as np
 import facedata
+import checkpoint
 from discriminator import Discriminator
 from generator import Generator
 
@@ -23,7 +24,7 @@ def weights_init_normal(m):
     
     # Apply initial weights to convolutional and linear layers
     if isinstance(m, nn.Linear) or isinstance(m, nn.Conv2d) or isinstance(m, nn.ConvTranspose2d):
-        print(classname)
+        #print(classname)
         if hasattr(m, 'weight') and m.weight is not None:
             nn.init.normal_(m.weight, mean=0, std=0.02)
         if hasattr(m, 'bias') and m.bias is not None:
@@ -39,9 +40,9 @@ def build_network(d_conv_dim, g_conv_dim, z_size):
     D.apply(weights_init_normal)
     G.apply(weights_init_normal)
 
-    print(D)
-    print()
-    print(G)
+    #print(D)
+    #print()
+    #print(G)
     
     return D, G
 
@@ -142,6 +143,8 @@ def run_training(D, G, d_optimizer, g_optimizer, dataloader, z_size, n_epochs, t
             
             # Print some loss stats
             if batch_i % print_every == 0:
+                checkpoint.save('checkpoint.pt', D, G)
+                checkpoint.load('checkpoint.pt')
                 # append discriminator loss and generator loss
                 losses.append((d_loss.item(), g_loss.item()))
                 # print discriminator and generator loss
@@ -165,7 +168,7 @@ def run_training(D, G, d_optimizer, g_optimizer, dataloader, z_size, n_epochs, t
 
 def train(args):
 
-    print("Loading data")
+    print("Loading data...")
 
     dataloader = facedata.get_data_loader(batch_size=64, image_size=32, data_dir='celeba')
 
