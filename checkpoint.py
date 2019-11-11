@@ -46,4 +46,5 @@ def load(filename):
 
     #print(checkpoint)
     #return torch.load(save_filename)
+    return D, G
 
