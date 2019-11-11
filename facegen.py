@@ -178,7 +178,8 @@ def plot_training_losses(losses):
     Plots the training losses for the generator and discriminator recorded after each epoch.
     :param losses: A list of tuples of the discriminator and generator losses.
     """
-    fig, ax = plt.subplots()
+    
+    fig, ax = plt.subplots(num='Training Losses')    
     losses = np.array(losses)
     plt.plot(losses.T[0], label='Discriminator', alpha=0.5)
     plt.plot(losses.T[1], label='Generator', alpha=0.5)
@@ -216,12 +217,12 @@ def train(args):
         z_size=z_size, n_epochs=n_epochs, train_on_gpu=torch.cuda.is_available())
 
     plot_training_losses(losses)
-    
+
 
 
 def generate(args):
     print("Generating...")
-    D, G = checkpoint.load('model.pth')
+    D, G = checkpoint.load('model3.pth')
     #print(f"generate to {args.path}")
     print(args.path)
 
@@ -243,7 +244,7 @@ parser_gen.add_argument('-path', type=str, required=True,
     help='The path to the file where the generated image has to be stored.')
 parser_gen.set_defaults(func=generate)
 
-#args = parser.parse_args("train -lr 0.001 -epochs=4".split())
+args = parser.parse_args("train -lr 0.001 -epochs=4".split())
 #args = parser.parse_args("generate -path z:/test.jpg".split())
-args = parser.parse_args()
+#args = parser.parse_args()
 args.func(args)
