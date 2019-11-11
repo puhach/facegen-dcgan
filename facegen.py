@@ -3,11 +3,12 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import numpy as np
+import pickle as pkl
 import facedata
 import checkpoint
 from discriminator import Discriminator
 from generator import Generator
-
+import matplotlib.pyplot as plt
 
 
 
@@ -143,8 +144,8 @@ def run_training(D, G, d_optimizer, g_optimizer, dataloader, z_size, n_epochs, t
             
             # Print some loss stats
             if batch_i % print_every == 0:
-                checkpoint.save('checkpoint.pt', D, G)
-                checkpoint.load('checkpoint.pt')
+                #checkpoint.save('checkpoint.pt', D, G)
+                #checkpoint.load('checkpoint.pt')
                 # append discriminator loss and generator loss
                 losses.append((d_loss.item(), g_loss.item()))
                 # print discriminator and generator loss
@@ -158,12 +159,33 @@ def run_training(D, G, d_optimizer, g_optimizer, dataloader, z_size, n_epochs, t
         samples.append(samples_z)
         G.train() # back to training mode
 
+    
+    # save the trained model
+    checkpoint.save('model.pth', D, G)
+
+
     # Save training generator samples
     with open('train_samples.pkl', 'wb') as f:
         pkl.dump(samples, f)
     
+
     # finally return losses
     return losses
+
+
+def plot_training_losses(losses):
+    """
+    Plots the training losses for the generator and discriminator recorded after each epoch.
+    :param losses: A list of tuples of the discriminator and generator losses.
+    """
+    fig, ax = plt.subplots()
+    losses = np.array(losses)
+    plt.plot(losses.T[0], label='Discriminator', alpha=0.5)
+    plt.plot(losses.T[1], label='Generator', alpha=0.5)
+    plt.title("Training Losses")
+    plt.legend()
+    plt.show()
+    
 
 
 def train(args):
@@ -193,10 +215,13 @@ def train(args):
     losses = run_training(D, G, d_optimizer, g_optimizer, dataloader, 
         z_size=z_size, n_epochs=n_epochs, train_on_gpu=torch.cuda.is_available())
 
-
+    plot_training_losses(losses)
+    
 
 
 def generate(args):
+    print("Generating...")
+    D, G = checkpoint.load('model.pth')
     #print(f"generate to {args.path}")
     print(args.path)
 
@@ -208,8 +233,8 @@ subparsers = parser.add_subparsers()
 
 # create the parser for the "foo" command
 parser_train = subparsers.add_parser('train')
-parser_train.add_argument('-epochs', type=int, default=2)
-parser_train.add_argument('-lr', type=float, default=0.001)
+parser_train.add_argument('-epochs', type=int, default=2, help='The number of epochs to train for.')
+parser_train.add_argument('-lr', type=float, default=0.001, help='The learning rate.')
 parser_train.set_defaults(func=train)
 
 # create the parser for the "bar" command
@@ -218,7 +243,7 @@ parser_gen.add_argument('-path', type=str, required=True,
     help='The path to the file where the generated image has to be stored.')
 parser_gen.set_defaults(func=generate)
 
-args = parser.parse_args("train -lr 0.001 -epochs=4".split())
+#args = parser.parse_args("train -lr 0.001 -epochs=4".split())
 #args = parser.parse_args("generate -path z:/test.jpg".split())
-#args = parser.parse_args()
+args = parser.parse_args()
 args.func(args)
