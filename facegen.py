@@ -9,7 +9,10 @@ import checkpoint
 from discriminator import Discriminator
 from generator import Generator
 import matplotlib.pyplot as plt
-
+import imageio
+import os
+#import pathlib
+import math
 
 
 def weights_init_normal(m):
@@ -261,8 +264,27 @@ def generate(args):
         z = z.cuda()
 
     G.eval() # for generating samples
+    
     samples = G(z)
+
     view_samples(samples)
+
+    # TODO: use this conversion before viewing samples and adjust the view_samples function
+    # (batch, channels, size, size) -> (batch, size, size, channels)
+    samples = samples.detach().cpu().numpy().transpose(0, 2, 3, 1)
+    
+    # TODO: perhaps, create a separate function to perform universal scaling
+    # scale [-1, 1] back to [0, 255]
+    samples = ((samples + 1) * 255 / 2).astype(np.uint8)
+
+    # save images
+    output_dir = 'generated'
+    os.makedirs(output_dir, exist_ok=True)
+    for i in range(len(samples)):
+        file_name = str(i+1)
+        file_name = output_dir + '/' + file_name.zfill(int(math.log10(sample_size)) + 1) + '.jpg'
+        #print(samples[i].shape)
+        imageio.imwrite(file_name, samples[i])
 
     print(args.path)
 
