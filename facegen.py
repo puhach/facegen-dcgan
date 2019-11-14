@@ -248,11 +248,23 @@ def train(args):
 
 def generate(args):
     print("Generating...")
-    D, G = checkpoint.load('model.pth')
+    _, G = checkpoint.load('model.pth')
     #print(f"generate to {args.path}")
 
-    print(args.path)
+    use_gpu = False
+    sample_size=16
+    z = np.random.uniform(-1, 1, size=(sample_size, G.z_size))
+    z = torch.from_numpy(z).float()
+    # move z to GPU if available
+    if use_gpu:
+        G.cuda()
+        z = z.cuda()
 
+    G.eval() # for generating samples
+    samples = G(z)
+    view_samples(samples)
+
+    print(args.path)
 
 
 # create the top-level parser
@@ -271,7 +283,7 @@ parser_gen.add_argument('-path', type=str, required=True,
     help='The path to the file where the generated image has to be stored.')
 parser_gen.set_defaults(func=generate)
 
-args = parser.parse_args("train -lr 0.001 -epochs=4".split())
-#args = parser.parse_args("generate -path z:/test.jpg".split())
+#args = parser.parse_args("train -lr 0.001 -epochs=4".split())
+args = parser.parse_args("generate -path z:/test.jpg".split())
 #args = parser.parse_args()
 args.func(args)
