@@ -197,16 +197,22 @@ def view_samples(samples):
     :param samples: The list of generated samples (tensors).
     """
 
-    fig, axes = plt.subplots(num='Generated Samples Preview', 
-        figsize=(6,6), nrows=4, ncols=4, sharey=True, sharex=True)
+    nrows = int(math.sqrt(len(samples)))
+    ncols = int(math.ceil(len(samples) / nrows))
 
-    for ax, img in zip(axes.flatten(), samples):
-        img = img.detach().cpu().numpy()
+    #fig, axes = plt.subplots(num='Generated Samples Preview', 
+    #    figsize=(ncols,nrows), nrows=nrows, ncols=ncols, sharey=True, sharex=True)
+    fig = plt.figure(num = 'Generated Samples Preview', figsize=(ncols, nrows))
+
+    for i, sample in enumerate(samples):
+        ax = fig.add_subplot(nrows, ncols, i+1, xticks=[], yticks=[])
+        #ax = fig.add_subplot(n, int(math.ceil(plot_size/n)), idx+1, xticks=[], yticks=[])
+        img = sample.detach().cpu().numpy()
         img = np.transpose(img, (1, 2, 0))
         img = ((img + 1)*255 / (2)).astype(np.uint8)
-        ax.xaxis.set_visible(False)
-        ax.yaxis.set_visible(False)
-        im = ax.imshow(img.reshape((32,32,3)))
+        #ax.imshow(np.transpose(images[idx], (1, 2, 0)))
+        ax.imshow(img.reshape((32,32,3)))
+
 
     plt.show()
 
@@ -327,6 +333,6 @@ parser_gen.add_argument('-ext', type=str, default='.jpg',
 parser_gen.set_defaults(func=generate)
 
 #args = parser.parse_args("train -lr 0.001 -epochs=4".split())
-args = parser.parse_args("generate -n 3 -model z:/artifact/model.pth -output z:/generated -ext=.png".split())
+args = parser.parse_args("generate -n 10 -model z:/artifact/model.pth -output z:/generated -ext=.png".split())
 #args = parser.parse_args()
 args.func(args)
