@@ -250,7 +250,9 @@ def train(args):
 
 
 def generate(args):
+
     print("Generating...")
+
     _, G = checkpoint.load('model.pth')
     #print(f"generate to {args.path}")
 
@@ -278,7 +280,7 @@ def generate(args):
     samples = ((samples + 1) * 255 / 2).astype(np.uint8)
 
     # save images
-    output_dir = 'generated'
+    output_dir = args.path
     os.makedirs(output_dir, exist_ok=True)
     for i in range(len(samples)):
         file_name = str(i+1)
@@ -286,7 +288,7 @@ def generate(args):
         #print(samples[i].shape)
         imageio.imwrite(file_name, samples[i])
 
-    print(args.path)
+    print('Done!')
 
 
 # create the top-level parser
@@ -301,11 +303,11 @@ parser_train.set_defaults(func=train)
 
 # create the parser for the "bar" command
 parser_gen = subparsers.add_parser('generate')
-parser_gen.add_argument('-path', type=str, required=True, 
+parser_gen.add_argument('-output', type=str, required=True, 
     help='The path to the file where the generated image has to be stored.')
 parser_gen.set_defaults(func=generate)
 
 #args = parser.parse_args("train -lr 0.001 -epochs=4".split())
-args = parser.parse_args("generate -path z:/test.jpg".split())
+args = parser.parse_args("generate -output z:/generated".split())
 #args = parser.parse_args()
 args.func(args)
