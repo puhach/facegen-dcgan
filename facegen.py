@@ -256,8 +256,8 @@ def generate(args):
     _, G = checkpoint.load(args.model)
     
     use_gpu = False
-    sample_size=16
-    z = np.random.uniform(-1, 1, size=(sample_size, G.z_size))
+    n = args.n
+    z = np.random.uniform(-1, 1, size=(n, G.z_size))
     z = torch.from_numpy(z).float()
     # move z to GPU if available
     if use_gpu:
@@ -286,10 +286,21 @@ def generate(args):
 
     for i in range(len(samples)):
         file_name = str(i+1)
-        file_name = output_dir + '/' + file_name.zfill(int(math.log10(sample_size)) + 1) + args.ext
+        file_name = output_dir + '/' + file_name.zfill(int(math.log10(n)) + 1) + args.ext
         imageio.imwrite(file_name, samples[i])
 
     print('Done!')
+
+
+def validate_sample_size(value):
+    """
+    Checks whether the number of images to generate is a valid positive integer.
+    """
+    n = int(value)
+    if n < 1:
+        raise argparse.ArgumentTypeError('"{0}" is not a valid number of images to generate.'.format(value))
+
+    return n
 
 
 # create the top-level parser
@@ -304,15 +315,18 @@ parser_train.set_defaults(func=train)
 
 # create the parser for the "bar" command
 parser_gen = subparsers.add_parser('generate')
+parser_gen.add_argument('-n', type=validate_sample_size, required=True,
+    help='Specifies the number of images to generate.')
 parser_gen.add_argument('-model', type=str, default='model.pth',
     help='The path to a file containing the model artifact. If omitted, defaults to model.pth.')
 parser_gen.add_argument('-output', type=str, required=True, 
     help='The path to the file where the generated image has to be stored.')
 parser_gen.add_argument('-ext', type=str, default='.jpg', 
     help='Allows to specify the generated image format. Defaults to .jpg.')
+
 parser_gen.set_defaults(func=generate)
 
 #args = parser.parse_args("train -lr 0.001 -epochs=4".split())
-args = parser.parse_args("generate -model z:/artifact/model.pth -output z:/generated -ext=.png".split())
+args = parser.parse_args("generate -n 3 -model z:/artifact/model.pth -output z:/generated -ext=.png".split())
 #args = parser.parse_args()
 args.func(args)
