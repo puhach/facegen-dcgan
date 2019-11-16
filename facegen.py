@@ -112,7 +112,7 @@ def run_training(D, G, d_optimizer, g_optimizer, dataloader, z_size, n_epochs, t
         for batch_i, (real_images, _) in enumerate(dataloader):
 
             batch_size = real_images.size(0)
-            real_images = facedata.scale(real_images)
+            real_images = facedata.scale(real_images, input_range=(0, 1))
 
             if train_on_gpu:
                 real_images = real_images.cuda()
@@ -280,9 +280,9 @@ def generate(args):
     # (batch, channels, size, size) -> (batch, size, size, channels)
     samples = samples.detach().cpu().numpy().transpose(0, 2, 3, 1)
     
-    # TODO: perhaps, create a separate function to perform universal scaling
     # scale [-1, 1] back to [0, 255]
-    samples = ((samples + 1) * 255 / 2).astype(np.uint8)
+    samples = facedata.scale(samples, input_range=(-1, +1), target_range=(0, 255))
+    samples = samples.astype(np.uint8)
 
     # save images
     print('Generating to "{0}"'.format(args.output))
