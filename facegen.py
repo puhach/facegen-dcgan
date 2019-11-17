@@ -5,10 +5,10 @@ import torch.optim as optim
 import numpy as np
 import pickle as pkl
 import facedata
+import display
 import checkpoint
 from discriminator import Discriminator
 from generator import Generator
-import matplotlib.pyplot as plt
 import imageio
 import os
 #import pathlib
@@ -176,55 +176,13 @@ def run_training(D, G, d_optimizer, g_optimizer, dataloader, z_size, n_epochs, t
     return losses
 
 
-def plot_training_losses(losses):
-    """
-    Plots the training losses for the generator and discriminator recorded after each epoch.
-    :param losses: A list of tuples of the discriminator and generator losses.
-    """
-    
-    fig, ax = plt.subplots(num='Training Losses')    
-    losses = np.array(losses)
-    plt.plot(losses.T[0], label='Discriminator', alpha=0.5)
-    plt.plot(losses.T[1], label='Generator', alpha=0.5)
-    plt.title("Training Losses")
-    plt.legend()
-    plt.show()
-    
-
-def view_samples(samples):
-    """
-    A helper function for viewing a list of generated images.
-    :param samples: The list of generated samples (tensors).
-    """
-
-    nrows = int(math.sqrt(len(samples)))
-    ncols = int(math.ceil(len(samples) / nrows))
-
-    #fig, axes = plt.subplots(num='Generated Samples Preview', 
-    #    figsize=(ncols,nrows), nrows=nrows, ncols=ncols, sharey=True, sharex=True)
-    fig = plt.figure(num = 'Generated Samples Preview', figsize=(ncols, nrows))
-
-    for i, sample in enumerate(samples):
-        ax = fig.add_subplot(nrows, ncols, i+1, xticks=[], yticks=[])
-        #ax = fig.add_subplot(n, int(math.ceil(plot_size/n)), idx+1, xticks=[], yticks=[])
-        #img = sample.detach().cpu().numpy()
-        #img = np.transpose(img, (1, 2, 0))
-        #img = ((img + 1)*255 / (2)).astype(np.uint8)
-        #ax.imshow(np.transpose(images[idx], (1, 2, 0)))
-        #ax.imshow(img.reshape((32,32,3)))
-        ax.imshow(sample)
-
-
-    plt.show()
-
-
 def train(args):
 
     print("Loading data...")
 
     dataloader = facedata.get_data_loader(batch_size=64, image_size=32, data_dir='celeba')
 
-    facedata.preview(dataloader, 20)
+    display.preview_input(dataloader, 20)
 
     #imgs, _ = iter(dataloader).next()
     #scaled_imgs = scale(imgs)
@@ -244,14 +202,14 @@ def train(args):
 
     losses = run_training(D, G, d_optimizer, g_optimizer, dataloader, 
         z_size=z_size, n_epochs=n_epochs, train_on_gpu=torch.cuda.is_available())
-
-    plot_training_losses(losses)
+    
+    display.plot_training_losses(losses)
 
     with open('train_samples.pkl', 'rb') as f:
         samples = pkl.load(f)
 
     # view samples from the last epoch of training
-    view_samples(facedata.postprocess(samples[-1]))
+    display.view_samples(facedata.postprocess(samples[-1]))
 
     print('Done!')
 
@@ -278,7 +236,7 @@ def generate(args):
 
     samples = facedata.postprocess(samples)
 
-    view_samples(samples)
+    display.view_samples(samples)
   
     
     # save images
@@ -329,7 +287,7 @@ parser_gen.add_argument('-ext', type=str, default='.jpg',
 
 parser_gen.set_defaults(func=generate)
 
-#args = parser.parse_args("train -lr 0.001 -epochs=4".split())
-args = parser.parse_args("generate -n 10 -model z:/artifact/model.pth -output z:/generated -ext=.png".split())
+args = parser.parse_args("train -lr 0.001 -epochs=4".split())
+#args = parser.parse_args("generate -n 10 -model z:/artifact/model.pth -output z:/generated -ext=.png".split())
 #args = parser.parse_args()
 args.func(args)
