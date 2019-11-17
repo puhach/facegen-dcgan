@@ -220,13 +220,12 @@ def generate(args):
 
     _, G = checkpoint.load(args.model)
     
-    use_gpu = False
     n = args.n
     z = np.random.uniform(-1, 1, size=(n, G.z_size))
     z = torch.from_numpy(z).float()
     
     # move z to GPU if available
-    if use_gpu:
+    if args.gpu:
         G.cuda()
         z = z.cuda()
 
@@ -284,10 +283,17 @@ parser_gen.add_argument('-output', type=str, required=True,
     help='The path to the file where the generated image has to be stored.')
 parser_gen.add_argument('-ext', type=str, default='.jpg', 
     help='Allows to specify the generated image format. Defaults to .jpg.')
-
+#parser_gen.add_argument('-gpu', default=torch.cuda.is_available(), action='store_true',
+#    help='Determines whether GPU acceleration should be used for image generation.')
+parser_gpu = parser_gen.add_mutually_exclusive_group(required=False)
+parser_gpu.add_argument('-gpu', dest='gpu', action='store_true',
+    help='Use GPU acceleration for generating images. Set by default if GPU is available.')
+parser_gpu.add_argument('-no-gpu', dest='gpu', action='store_false',
+    help='Do not use GPU acceleration for generating images.')
+parser_gpu.set_defaults(gpu=torch.cuda.is_available())
 parser_gen.set_defaults(func=generate)
 
-args = parser.parse_args("train -lr 0.001 -epochs=4".split())
-#args = parser.parse_args("generate -n 10 -model z:/artifact/model.pth -output z:/generated -ext=.png".split())
+#args = parser.parse_args("train -lr 0.001 -epochs=4".split())
+args = parser.parse_args("generate -n 10 -model z:/artifact/model.pth -output z:/generated -ext=.png".split())
 #args = parser.parse_args()
 args.func(args)
