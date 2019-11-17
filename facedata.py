@@ -69,3 +69,20 @@ def scale(x, input_range=(0, 1), target_range=(-1, 1)):
     # scale from (0, 1) range to the target range
     x = target_range[0] + x*(target_range[1] - target_range[0])
     return x
+
+
+def postprocess(samples):
+    """
+    Converts the generated samples to the format appropriate for image display and saving.
+    :param samples: Generated image tensors of shape (batch, channels, height, width)
+                    containing values ranging from -1 to +1.
+    :return: A converted image tensor of shape (batch, height, width, channels) containing 
+            uint8 values in range (-1, +1).
+    """
+
+    # (batch, channels, height, width) -> (batch, height, width, channels)
+    samples = samples.detach().cpu().numpy().transpose(0, 2, 3, 1)
+
+    # scale [-1, 1] back to [0, 255]
+    samples = scale(samples, input_range=(-1, +1), target_range=(0, 255))
+    return samples.astype(np.uint8)

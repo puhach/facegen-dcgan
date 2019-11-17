@@ -207,11 +207,12 @@ def view_samples(samples):
     for i, sample in enumerate(samples):
         ax = fig.add_subplot(nrows, ncols, i+1, xticks=[], yticks=[])
         #ax = fig.add_subplot(n, int(math.ceil(plot_size/n)), idx+1, xticks=[], yticks=[])
-        img = sample.detach().cpu().numpy()
-        img = np.transpose(img, (1, 2, 0))
-        img = ((img + 1)*255 / (2)).astype(np.uint8)
+        #img = sample.detach().cpu().numpy()
+        #img = np.transpose(img, (1, 2, 0))
+        #img = ((img + 1)*255 / (2)).astype(np.uint8)
         #ax.imshow(np.transpose(images[idx], (1, 2, 0)))
-        ax.imshow(img.reshape((32,32,3)))
+        #ax.imshow(img.reshape((32,32,3)))
+        ax.imshow(sample)
 
 
     plt.show()
@@ -250,9 +251,9 @@ def train(args):
         samples = pkl.load(f)
 
     # view samples from the last epoch of training
-    _ = view_samples(samples[-1])
+    view_samples(facedata.postprocess(samples[-1]))
 
-
+    print('Done!')
 
 
 def generate(args):
@@ -265,6 +266,7 @@ def generate(args):
     n = args.n
     z = np.random.uniform(-1, 1, size=(n, G.z_size))
     z = torch.from_numpy(z).float()
+    
     # move z to GPU if available
     if use_gpu:
         G.cuda()
@@ -274,16 +276,11 @@ def generate(args):
     
     samples = G(z)
 
+    samples = facedata.postprocess(samples)
+
     view_samples(samples)
-
-    # TODO: use this conversion before viewing samples and adjust the view_samples function
-    # (batch, channels, size, size) -> (batch, size, size, channels)
-    samples = samples.detach().cpu().numpy().transpose(0, 2, 3, 1)
+  
     
-    # scale [-1, 1] back to [0, 255]
-    samples = facedata.scale(samples, input_range=(-1, +1), target_range=(0, 255))
-    samples = samples.astype(np.uint8)
-
     # save images
     print('Generating to "{0}"'.format(args.output))
 
