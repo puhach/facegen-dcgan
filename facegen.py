@@ -218,7 +218,7 @@ def generate(args):
 
     print('Loading the model artifact "{0}"'.format(args.model))
 
-    _, G = checkpoint.load(args.model)
+    _, G = checkpoint.load(args.model, args.gpu)
     
     n = args.n
     z = np.random.uniform(-1, 1, size=(n, G.z_size))
