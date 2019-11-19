@@ -33,21 +33,23 @@ def deconv(in_channels, out_channels, kernel_size, stride, padding, activation=N
 
 class Generator(nn.Module):
     
-    def __init__(self, z_size, conv_dim, target_size=32, depth=4):
+    def __init__(self, target_size, out_channels, z_size, conv_dim, depth=4):
         """
         Initializes the Generator. The generator should upsample an input and generate a new image of 
         the same size as the training data.
+        :param target_size: The size of the image to generate (single value).
+        :param out_channels: The number of color channels in target images.
         :param z_size: The length of the input latent vector, z.
         :param conv_dim: The depth of the inputs to the *last* transpose convolutional layer.
-        :param target_size: The size of the image to generate (single value).
         :param depth: The number of convolutional layers.
         """
         super(Generator, self).__init__()
 
         # save the initialization parameters
+        self.target_size = target_size
+        self.out_channels = out_channels
         self.z_size = z_size
         self.conv_dim = conv_dim
-        self.target_size = target_size
         self.depth = depth
 
         # calculate the initial image size on the basis of the target image size 
@@ -72,7 +74,7 @@ class Generator(nn.Module):
         
         assert image_size*2 == target_size
         
-        deconv_blocks.append(nn.ConvTranspose2d(in_channels=conv_dim, out_channels=3, 
+        deconv_blocks.append(nn.ConvTranspose2d(in_channels=conv_dim, out_channels=self.out_channels, 
                                                 kernel_size=4, stride=2, padding=1))
         
                 
@@ -103,4 +105,4 @@ class Generator(nn.Module):
         """
         Returns initialization parameters of the generator as a tuple.
         """
-        return (self.z_size, self.conv_dim, self.target_size, self.depth)
+        return (self.target_size, self.out_channels, self.z_size, self.conv_dim, self.depth)

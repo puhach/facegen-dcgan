@@ -51,23 +51,23 @@ def conv(in_channels, out_channels, kernel_size, stride, padding, activation, ba
 
 class Discriminator(nn.Module):
 
-    def __init__(self, conv_dim, in_channels=3, image_size=32, depth=5):
+    def __init__(self, image_size, in_channels, conv_dim, depth=5):
         """
         Initializes the Discriminator. This is a convolutional classifier only without any maxpooling layers. 
         To deal with this complex data a deep network with normalization is used. 
 
-        :param conv_dim: The depth of the first convolutional layer.
-        :param in_channels: The number of channels in the input image.
         :param image_size: The size of input images (single number).
+        :param in_channels: The number of channels in the input image.
+        :param conv_dim: The depth of the first convolutional layer.
         :param depth: The number of layers.
         """
 
         super(Discriminator, self).__init__()
 
         # save the initialization parameters
-        self.conv_dim = conv_dim
-        self.in_channels = in_channels
         self.image_size = image_size
+        self.in_channels = in_channels
+        self.conv_dim = conv_dim
         self.depth = depth
 
         conv_blocks = []
@@ -114,4 +114,4 @@ class Discriminator(nn.Module):
         """
         Returns initialization parameters of the discriminator as a tuple.
         """
-        return (self.conv_dim, self.in_channels, self.image_size, self.depth)
+        return (self.image_size, self.in_channels, self.conv_dim, self.depth)

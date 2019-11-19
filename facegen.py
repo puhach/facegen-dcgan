@@ -46,8 +46,8 @@ def build_network(image_size, d_conv_dim, g_conv_dim, z_size):
     """
 
     # define discriminator and generator
-    D = Discriminator(d_conv_dim, image_size=image_size)
-    G = Generator(z_size=z_size, conv_dim=g_conv_dim, target_size=image_size)
+    D = Discriminator(image_size=image_size, in_channels=3, conv_dim=d_conv_dim)
+    G = Generator(target_size=image_size, out_channels=3, z_size=z_size, conv_dim=g_conv_dim)
 
     # initialize model weights
     D.apply(weights_init_normal)
@@ -307,7 +307,7 @@ parser_gpu.add_argument('-no-gpu', dest='gpu', action='store_false',
 parser_gpu.set_defaults(gpu=torch.cuda.is_available())
 parser_gen.set_defaults(func=generate)
 
-args = parser.parse_args("train -lr 0.001 -epochs=0 -model z:/test.pth".split())
-#args = parser.parse_args("generate -n 10 -model z:/artifact/model.pth -output z:/generated -ext=.png".split())
+#args = parser.parse_args("train -lr 0.001 -epochs=0 -model z:/test.pth".split())
+args = parser.parse_args("generate -n 10 -model z:/test.pth -output z:/generated -ext=.png".split())
 #args = parser.parse_args()
 args.func(args)
