@@ -78,7 +78,8 @@ def fake_loss(D_out):
     loss = torch.mean((D_out - 0)**2)
     return loss
 
-def run_training(D, G, d_optimizer, g_optimizer, dataloader, z_size, n_epochs, train_on_gpu, print_every=50):
+def run_training(D, G, d_optimizer, g_optimizer, dataloader, z_size, n_epochs, train_on_gpu, 
+    model_path, print_every=50):
     """
     Trains the adversarial networks for the specified number of epochs.
     :param D: The discriminator network.
@@ -89,6 +90,7 @@ def run_training(D, G, d_optimizer, g_optimizer, dataloader, z_size, n_epochs, t
     :param z_size: The latent vector size.
     :param n_epochs: The number of epochs to train for.
     :param train_on_gpu: Determines whether to train the networks on GPU (faster).
+    :param model_path: The path to a file where the model artifact will be saved.
     :param print_every: Controls how often to print and record the models' losses.
     :return: D and G losses.
     """
@@ -173,7 +175,7 @@ def run_training(D, G, d_optimizer, g_optimizer, dataloader, z_size, n_epochs, t
 
     
     # save the trained model
-    checkpoint.save('model.pth', D, G)
+    checkpoint.save(model_path, D, G)
 
 
     # Save training generator samples
@@ -210,7 +212,8 @@ def train(args):
     n_epochs = args.epochs
 
     losses = run_training(D, G, d_optimizer, g_optimizer, dataloader, 
-        z_size=z_size, n_epochs=n_epochs, train_on_gpu=torch.cuda.is_available())
+        z_size=z_size, n_epochs=n_epochs, train_on_gpu=torch.cuda.is_available(),
+        model_path=args.model)
     
     display.plot_training_losses(losses)
 
@@ -280,6 +283,8 @@ subparsers = parser.add_subparsers()
 parser_train = subparsers.add_parser('train')
 parser_train.add_argument('-epochs', type=int, default=2, help='The number of epochs to train for.')
 parser_train.add_argument('-lr', type=float, default=0.001, help='The learning rate.')
+parser_train.add_argument('-model', type=str, default='model.pth',
+    help='The path to a file where the model artifact will be saved. If omitted, defaults to model.pth.')
 parser_train.set_defaults(func=train)
 
 # create the parser for the "bar" command
@@ -302,7 +307,7 @@ parser_gpu.add_argument('-no-gpu', dest='gpu', action='store_false',
 parser_gpu.set_defaults(gpu=torch.cuda.is_available())
 parser_gen.set_defaults(func=generate)
 
-#args = parser.parse_args("train -lr 0.001 -epochs=4".split())
-args = parser.parse_args("generate -n 10 -model z:/artifact/model.pth -output z:/generated -ext=.png".split())
+args = parser.parse_args("train -lr 0.001 -epochs=0 -model z:/test.pth".split())
+#args = parser.parse_args("generate -n 10 -model z:/artifact/model.pth -output z:/generated -ext=.png".split())
 #args = parser.parse_args()
 args.func(args)
