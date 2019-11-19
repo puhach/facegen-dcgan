@@ -35,10 +35,19 @@ def weights_init_normal(m):
             nn.init.normal_(m.bias, mean=0, std=0.02)
  
 
-def build_network(d_conv_dim, g_conv_dim, z_size):
+def build_network(image_size, d_conv_dim, g_conv_dim, z_size):
+    """
+    Creates the discriminator and the generator.
+    :param image_size: The size of input and target images.
+    :param d_conv_dim: The depth of the first convolutional layer of the discriminator.
+    :param g_conv_dim: The depth of the inputs to the *last* transpose convolutional layer of the generator.
+    :param z_size: The length of the input latent vector, z.
+    :return: A tuple of discriminator and generator instances.
+    """
+
     # define discriminator and generator
-    D = Discriminator(d_conv_dim)
-    G = Generator(z_size=z_size, conv_dim=g_conv_dim)
+    D = Discriminator(d_conv_dim, image_size=image_size)
+    G = Generator(z_size=z_size, conv_dim=g_conv_dim, target_size=image_size)
 
     # initialize model weights
     D.apply(weights_init_normal)
@@ -192,7 +201,7 @@ def train(args):
     
     z_size = 128
 
-    D, G = build_network(d_conv_dim=64, g_conv_dim=64, z_size=z_size)
+    D, G = build_network(image_size=32, d_conv_dim=64, g_conv_dim=64, z_size=z_size)
 
     # Create optimizers for the discriminator D and generator G
     d_optimizer = optim.Adam(D.parameters(), lr=0.0002, betas=[0.5, 0.999])
