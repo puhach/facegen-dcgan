@@ -307,7 +307,7 @@ parser_gpu.add_argument('-no-gpu', dest='gpu', action='store_false',
 parser_gpu.set_defaults(gpu=torch.cuda.is_available())
 parser_gen.set_defaults(func=generate)
 
-#args = parser.parse_args("train -lr 0.001 -epochs=0 -model z:/test.pth".split())
-args = parser.parse_args("generate -n 10 -model z:/test.pth -output z:/generated -ext=.png".split())
+#args = parser.parse_args("train -lr 0.001 -epochs=1 -model z:/model.pth".split())
+args = parser.parse_args("generate -n 10 -model model.pth -output z:/generated -ext=.png".split())
 #args = parser.parse_args()
 args.func(args)
