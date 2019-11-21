@@ -11,9 +11,7 @@ def save(filename, D, G):
     :param D: The discriminator.
     :param G: The generator.
     """
-    #filename = prefix + "_" + datetime.now().strftime('%Y%m%d-%H%M%S')
-    #save_filename = os.path.splitext(os.path.basename(filename))[0] + '.pt'
-    #save_filename = prefix
+    
     torch.save(
         {
             'D_init_params': D.get_init_params(),
@@ -22,7 +20,6 @@ def save(filename, D, G):
             'G_state': G.state_dict()
         }, 
         filename)
-    #return save_filename
 
 
 def load(filename, use_gpu):
@@ -32,8 +29,6 @@ def load(filename, use_gpu):
     :param use_gpu: Determines whether to load the model to GPU or CPU.
     """
 
-    #save_filename = os.path.splitext(os.path.basename(filename))[0] + '.pt'
-    
     checkpoint = torch.load(filename, map_location=lambda storage, loc: storage.cuda() if use_gpu else storage)
 
     D = Discriminator(*checkpoint['D_init_params'])
@@ -43,9 +38,6 @@ def load(filename, use_gpu):
     G.load_state_dict(checkpoint['G_state'])
 
     print('Checkpoint loaded.')
-    #print(f'Checkpoint {filename} loaded')
 
-    #print(checkpoint)
-    #return torch.load(save_filename)
     return D, G
 

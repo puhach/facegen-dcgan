@@ -1,6 +1,5 @@
 import torch
 import torch.nn as nn
-#import torch.nn.functional as F
 
 def deconv(in_channels, out_channels, kernel_size, stride, padding, activation=None, batch_norm=True):
     """
@@ -88,17 +87,17 @@ class Generator(nn.Module):
         :return: A generated image tensor of the size (target_size, target_size, 3).
         """
 
-        #print("x:", x.shape)
+        
         x = self.fc(x) # (z_size) -> (512*2*2)
-        #print("fc:", x.shape)
+        
         x = x.view(x.shape[0], self.in_channels, self.initial_size, self.initial_size) # (512*2*2) -> (512,2,2)
-        #print("x.resh:", x.shape)
+        
         # 1. (512,2,2) -> (256,4,4)
         # 2. (256,4,4) -> (128,8,8)
         # 3. (128,8,8) -> (64,16,16)
         # 4. (64,16,16) -> (3,32,32)
         x = torch.tanh(self.deconv_layers(x))
-        #x = F.tanh(self.deconv_layers(x))
+        
         return x
 
     def get_init_params(self):

@@ -1,7 +1,6 @@
 import torch
 from torchvision import datasets
 from torchvision import transforms
-#import matplotlib.pyplot as plt
 import numpy as np
 
 
@@ -37,8 +36,6 @@ def scale(x, input_range=(0, 1), target_range=(-1, 1)):
     d = input_range[1] - input_range[0]
     assert d > 0, "Invalid input range {0}".format(input_range)
     x = (x - input_range[0]) / d
-    #print('min:', x.min())
-    #print('max:', x.max())
 
     # scale from (0, 1) range to the target range
     x = target_range[0] + x*(target_range[1] - target_range[0])

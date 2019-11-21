@@ -1,6 +1,5 @@
 import torch
 import torch.nn as nn
-#import torch.nn.functional as F
 
 
 def conv(in_channels, out_channels, kernel_size, stride, padding, activation, batch_norm=True):
@@ -26,25 +25,7 @@ def conv(in_channels, out_channels, kernel_size, stride, padding, activation, ba
         layers.append(nn.BatchNorm2d(out_channels))
 
     if activation:
-        #print(type(activation))
         layers.append(activation)
-        
-#     if activation is None or activation == '':
-#         return layers
-        
-#     activations = {
-#         'relu': nn.ReLU(),
-#         'leaky_relu': nn.LeakyReLU(negative_slope=0.2),
-#         'sigmoid': nn.Sigmoid(),
-#         # ! Unfortunately PyTorch version from the workspace doesn't have the Identity function
-#         #'': nn.Identity() # no activation
-#     }
-    
-#     try:
-#         layers.append(activations[activation.lower()])
-#     except KeyError:
-#         print(f"Unknown activation function: '{activation}'")
-#         raise
         
     return nn.Sequential(*layers)
 
