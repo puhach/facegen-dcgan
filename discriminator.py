@@ -32,7 +32,7 @@ def conv(in_channels, out_channels, kernel_size, stride, padding, activation, ba
 
 class Discriminator(nn.Module):
 
-    def __init__(self, image_size, in_channels, conv_dim, depth=5):
+    def __init__(self, image_size, in_channels, conv_dim, depth=4):
         """
         Initializes the Discriminator. This is a convolutional classifier only without any maxpooling layers. 
         To deal with this complex data a deep network with normalization is used. 
@@ -40,7 +40,7 @@ class Discriminator(nn.Module):
         :param image_size: The size of input images (single number).
         :param in_channels: The number of channels in the input image.
         :param conv_dim: The depth of the first convolutional layer.
-        :param depth: The number of layers.
+        :param depth: The number of convolutional layers.
         """
 
         super(Discriminator, self).__init__()
@@ -52,7 +52,7 @@ class Discriminator(nn.Module):
         self.depth = depth
 
         conv_blocks = []
-        for i in range(depth-1):
+        for i in range(depth):
             conv_blocks.append(conv(in_channels, conv_dim, kernel_size=4, stride=2, padding=1,
                                     ##activation = 'leaky_relu' if i < depth-1 else 'sigmoid',
                                     #activation = nn.LeakyReLU(negative_slope=0.2) if i < depth-1 else nn.Sigmoid(),
