@@ -256,15 +256,26 @@ def generate(args):
     print('Done!')
 
 
-def validate_sample_size(value):
+def validate_positive_int(value):
     """
-    Checks whether the number of images to generate is a valid positive integer.
+    Checks whether the value is a valid positive integer.
     """
     n = int(value)
     if n < 1:
-        raise argparse.ArgumentTypeError('"{0}" is not a valid number of images to generate.'.format(value))
+        raise argparse.ArgumentTypeError('"{0}" is not a positive integer value.'.format(value))
 
     return n
+
+def validate_positive_float(value):
+    """
+    Checks whether the value is a valid positive float.
+    """
+    n = float(value)
+    if n <= 0:
+        raise argparse.ArgumentTypeError('"{0}" is not a positive float value.'.format(value))
+
+    return n
+
 
 
 # create the top-level parser
@@ -273,17 +284,17 @@ subparsers = parser.add_subparsers()
 
 # create the parser for the "foo" command
 parser_train = subparsers.add_parser('train')
-parser_train.add_argument('-imsize', type=int, required=True, 
+parser_train.add_argument('-imsize', type=validate_positive_int, required=True, 
     help='The size of input and output images (single value).')
-parser_train.add_argument('-epochs', type=int, default=2, help='The number of epochs to train for.')
-parser_train.add_argument('-lr', type=float, default=0.001, help='The learning rate.')
+parser_train.add_argument('-epochs', type=validate_positive_int, default=2, help='The number of epochs to train for.')
+parser_train.add_argument('-lr', type=validate_positive_float, default=0.001, help='The learning rate.')
 parser_train.add_argument('-model', type=str, default='model.pth',
     help='The path to a file where the model artifact will be saved. If omitted, defaults to model.pth.')
 parser_train.set_defaults(func=train)
 
 # create the parser for the "bar" command
 parser_gen = subparsers.add_parser('generate')
-parser_gen.add_argument('-n', type=validate_sample_size, required=True,
+parser_gen.add_argument('-n', type=validate_positive_int, required=True,
     help='Specifies the number of images to generate.')
 parser_gen.add_argument('-model', type=str, default='model.pth',
     help='The path to a file containing the model artifact. If omitted, defaults to model.pth.')
@@ -301,6 +312,7 @@ parser_gpu.add_argument('-no-gpu', dest='gpu', action='store_false',
 parser_gpu.set_defaults(gpu=torch.cuda.is_available())
 parser_gen.set_defaults(func=generate)
 
+#args = parser.parse_args("train -lr 0.001 -epochs=1 -imsize=32 -model z:/model.pth".split())
 args = parser.parse_args("train -lr 0.001 -epochs=1 -imsize=32 -model z:/model.pth".split())
 #args = parser.parse_args("generate -n 10 -model model.pth -output z:/generated -ext=.png".split())
 #args = parser.parse_args()
