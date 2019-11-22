@@ -32,7 +32,7 @@ def conv(in_channels, out_channels, kernel_size, stride, padding, activation, ba
 
 class Discriminator(nn.Module):
 
-    def __init__(self, image_size, in_channels, conv_dim, depth=4):
+    def __init__(self, image_size, in_channels, conv_dim, depth):
         """
         Initializes the Discriminator. This is a convolutional classifier only without any maxpooling layers. 
         To deal with this complex data a deep network with normalization is used. 

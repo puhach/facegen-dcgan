@@ -32,7 +32,7 @@ def deconv(in_channels, out_channels, kernel_size, stride, padding, activation=N
 
 class Generator(nn.Module):
     
-    def __init__(self, target_size, out_channels, z_size, conv_dim, depth=4):
+    def __init__(self, target_size, out_channels, z_size, conv_dim, depth):
         """
         Initializes the Generator. The generator should upsample an input and generate a new image of 
         the same size as the training data.

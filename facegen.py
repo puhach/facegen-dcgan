@@ -35,19 +35,21 @@ def weights_init_normal(m):
             nn.init.normal_(m.bias, mean=0, std=0.02)
  
 
-def build_network(image_size, d_conv_dim, g_conv_dim, z_size):
+def build_network(image_size, z_size, d_conv_dim, d_conv_depth, g_conv_dim, g_conv_depth):
     """
     Creates the discriminator and the generator.
     :param image_size: The size of input and target images.
-    :param d_conv_dim: The depth of the first convolutional layer of the discriminator.
-    :param g_conv_dim: The depth of the inputs to the *last* transpose convolutional layer of the generator.
     :param z_size: The length of the input latent vector, z.
+    :param d_conv_dim: The depth of the first convolutional layer of the discriminator.
+    :param d_conv_depth: The number of convolutional layers of the discriminator.
+    :param g_conv_dim: The depth of the inputs to the *last* transpose convolutional layer of the generator.    
+    :param g_conv_depth: The number of convolutional layers of the generator.
     :return: A tuple of discriminator and generator instances.
     """
 
     # define discriminator and generator
-    D = Discriminator(image_size=image_size, in_channels=3, conv_dim=d_conv_dim)
-    G = Generator(target_size=image_size, out_channels=3, z_size=z_size, conv_dim=g_conv_dim)
+    D = Discriminator(image_size=image_size, in_channels=3, conv_dim=d_conv_dim, depth=d_conv_depth)
+    G = Generator(target_size=image_size, out_channels=3, z_size=z_size, conv_dim=g_conv_dim, depth=g_conv_depth)
 
     # initialize model weights
     D.apply(weights_init_normal)
@@ -195,7 +197,7 @@ def train(args):
    
     z_size = 128
 
-    D, G = build_network(image_size=args.imsize, d_conv_dim=64, g_conv_dim=64, z_size=z_size)
+    D, G = build_network(image_size=args.imsize, d_conv_dim=64, d_conv_depth=4, g_conv_dim=64, g_conv_depth=4, z_size=z_size)
 
     # Create optimizers for the discriminator D and generator G
     d_optimizer = optim.Adam(D.parameters(), lr=0.0002, betas=[0.5, 0.999])
@@ -336,7 +338,7 @@ parser_gpu.set_defaults(gpu=torch.cuda.is_available())
 parser_gen.set_defaults(func=generate)
 
 #args = parser.parse_args("train -lr 0.001 -epochs=1 -imsize=32 -model z:/model.pth".split())
-args = parser.parse_args("train -lr 0.001 -epochs=1 -imsize=32 -model z:/model.pth".split())
-#args = parser.parse_args("generate -n 10 -model model.pth -output z:/generated -ext=.png".split())
+#args = parser.parse_args("train -lr 0.001 -epochs=1 -imsize=32 -model z:/model.pth".split())
+args = parser.parse_args("generate -n 10 -model model.pth -output z:/generated -ext=.png".split())
 #args = parser.parse_args()
 args.func(args)
