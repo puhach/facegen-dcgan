@@ -129,7 +129,6 @@ def run_training(D, G, d_optimizer, g_optimizer, dataloader, z_size, n_epochs, t
                 real_images = real_images.cuda()
             
             # 1. Train the discriminator on real and fake images
-            #d_out = D(real_images)
             d_real_loss = real_loss(D(real_images))
             
             z = torch.from_numpy(np.random.uniform(-1, 1, size=(batch_size, z_size))).float()
@@ -157,11 +156,10 @@ def run_training(D, G, d_optimizer, g_optimizer, dataloader, z_size, n_epochs, t
             
             
             # Print some loss stats
-            if batch_i % print_every == 0:
-                #checkpoint.save('checkpoint.pt', D, G)
-                #checkpoint.load('checkpoint.pt')
+            if batch_i % print_every == 0:                
                 # append discriminator loss and generator loss
                 losses.append((d_loss.item(), g_loss.item()))
+                
                 # print discriminator and generator loss
                 print('Epoch [{:5d}/{:5d}] | d_loss: {:6.4f} | g_loss: {:6.4f}'.format(
                         epoch+1, n_epochs, d_loss.item(), g_loss.item()))
@@ -191,19 +189,13 @@ def train(args):
 
     print("Loading data...")
 
-    dataloader = facedata.get_data_loader(batch_size=64, image_size=32, data_dir='celeba')
+    dataloader = facedata.get_data_loader(batch_size=64, image_size=args.imsize, data_dir='celeba')
 
     display.preview_input(dataloader, 20)
-
-    #imgs, _ = iter(dataloader).next()
-    #scaled_imgs = scale(imgs)
-    #print(f'Min: {scaled_imgs.min()} Max: {scaled_imgs.max()}')
-
-    #print(f"training for {args.epochs} epochs with a learning rate = {args.lr}")
-    
+   
     z_size = 128
 
-    D, G = build_network(image_size=32, d_conv_dim=64, g_conv_dim=64, z_size=z_size)
+    D, G = build_network(image_size=args.imsize, d_conv_dim=64, g_conv_dim=64, z_size=z_size)
 
     # Create optimizers for the discriminator D and generator G
     d_optimizer = optim.Adam(D.parameters(), lr=0.0002, betas=[0.5, 0.999])
@@ -242,7 +234,7 @@ def generate(args):
         z = z.cuda()
 
     G.eval() # for generating samples
-    
+
     samples = G(z)
 
     samples = facedata.postprocess(samples)
@@ -281,6 +273,8 @@ subparsers = parser.add_subparsers()
 
 # create the parser for the "foo" command
 parser_train = subparsers.add_parser('train')
+parser_train.add_argument('-imsize', type=int, required=True, 
+    help='The size of input and output images (single value).')
 parser_train.add_argument('-epochs', type=int, default=2, help='The number of epochs to train for.')
 parser_train.add_argument('-lr', type=float, default=0.001, help='The learning rate.')
 parser_train.add_argument('-model', type=str, default='model.pth',
@@ -307,7 +301,7 @@ parser_gpu.add_argument('-no-gpu', dest='gpu', action='store_false',
 parser_gpu.set_defaults(gpu=torch.cuda.is_available())
 parser_gen.set_defaults(func=generate)
 
-#args = parser.parse_args("train -lr 0.001 -epochs=1 -model z:/model.pth".split())
-args = parser.parse_args("generate -n 10 -model model.pth -output z:/generated -ext=.png".split())
+args = parser.parse_args("train -lr 0.001 -epochs=1 -imsize=32 -model z:/model.pth".split())
+#args = parser.parse_args("generate -n 10 -model model.pth -output z:/generated -ext=.png".split())
 #args = parser.parse_args()
 args.func(args)
