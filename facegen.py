@@ -193,7 +193,8 @@ def train(args):
 
     dataloader = facedata.get_data_loader(batch_size=64, image_size=args.imsize, data_dir='celeba')
 
-    display.preview_input(dataloader, 20)
+    if args.previn:
+        display.preview_input(dataloader, 20)
    
     z_size = 128
 
@@ -315,6 +316,11 @@ parser_train.add_argument('-epochs', type=validate_positive_int, default=2, help
 parser_train.add_argument('-lr', type=validate_positive_float, default=0.001, help='The learning rate.')
 parser_train.add_argument('-model', type=str, default='model.pth',
     help='The path to a file where the model artifact will be saved. If omitted, defaults to model.pth.')
+# 'store_true' and 'store_false' - These are special cases of 'store_const' used for storing the values True and False 
+# respectively. In addition, they create default values of False and True respectively.
+parser_train.add_argument('-previn', action='store_true', 
+    help='If present, the input data preview will be displayed before training.')
+
 parser_train.set_defaults(func=train)
 
 # create the parser for the "bar" command
@@ -337,8 +343,8 @@ parser_gpu.add_argument('-no-gpu', dest='gpu', action='store_false',
 parser_gpu.set_defaults(gpu=torch.cuda.is_available())
 parser_gen.set_defaults(func=generate)
 
-#args = parser.parse_args("train -lr 0.001 -epochs=1 -imsize=32 -model z:/model.pth".split())
-#args = parser.parse_args("train -lr 0.001 -epochs=1 -imsize=32 -model z:/model.pth".split())
-args = parser.parse_args("generate -n 10 -model model.pth -output z:/generated -ext=.png".split())
+#args = parser.parse_args("train -lr 0.0001 -epochs=1 -imsize=64 -model z:/model.pth".split())
+args = parser.parse_args("train -lr 0.001 -epochs=1 -imsize=32 -model z:/model.pth".split())
+#args = parser.parse_args("generate -n 10 -model model.pth -output z:/generated -ext=.png".split())
 #args = parser.parse_args()
 args.func(args)
