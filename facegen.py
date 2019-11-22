@@ -256,11 +256,18 @@ def generate(args):
     print('Done!')
 
 
+
+
 def validate_positive_int(value):
     """
     Checks whether the value is a valid positive integer.
     """
-    n = int(value)
+
+    try:
+        n = int(value)
+    except ValueError as val_err:
+        raise argparse.ArgumentTypeError(val_err)
+
     if n < 1:
         raise argparse.ArgumentTypeError('"{0}" is not a positive integer value.'.format(value))
 
@@ -270,12 +277,28 @@ def validate_positive_float(value):
     """
     Checks whether the value is a valid positive float.
     """
-    n = float(value)
+    try:
+        n = float(value)
+    except ValueError as val_err:
+        raise argparse.ArgumentTypeError(val_err)
+
     if n <= 0:
         raise argparse.ArgumentTypeError('"{0}" is not a positive float value.'.format(value))
 
     return n
 
+
+
+def validate_image_size(value):
+    """
+    Checks whether the value is a valid image size.
+    """
+    n = validate_positive_int(value)
+
+    if (n & (n - 1)) != 0:
+        raise argparse.ArgumentTypeError('"{0}" is not a power of 2.'.format(value))
+
+    return n
 
 
 # create the top-level parser
@@ -284,8 +307,8 @@ subparsers = parser.add_subparsers()
 
 # create the parser for the "foo" command
 parser_train = subparsers.add_parser('train')
-parser_train.add_argument('-imsize', type=validate_positive_int, required=True, 
-    help='The size of input and output images (single value).')
+parser_train.add_argument('-imsize', type=validate_image_size, required=True, 
+    help='The size of input and output images. Must be a single value, a power of 2.')
 parser_train.add_argument('-epochs', type=validate_positive_int, default=2, help='The number of epochs to train for.')
 parser_train.add_argument('-lr', type=validate_positive_float, default=0.001, help='The learning rate.')
 parser_train.add_argument('-model', type=str, default='model.pth',
