@@ -81,7 +81,7 @@ def fake_loss(D_out):
     return loss
 
 def run_training(D, G, d_optimizer, g_optimizer, dataloader, z_size, n_epochs, train_on_gpu, 
-    model_path, print_every=50):
+    model_path, sample_generated, print_every=50):
     """
     Trains the adversarial networks for the specified number of epochs.
     :param D: The discriminator network.
@@ -93,6 +93,7 @@ def run_training(D, G, d_optimizer, g_optimizer, dataloader, z_size, n_epochs, t
     :param n_epochs: The number of epochs to train for.
     :param train_on_gpu: Determines whether to train the networks on GPU (faster).
     :param model_path: The path to a file where the model artifact will be saved.
+    :param sample_generated: Specifies whether to save generated image samples for preview.
     :param print_every: Controls how often to print and record the models' losses.
     :return: D and G losses.
     """
@@ -179,9 +180,10 @@ def run_training(D, G, d_optimizer, g_optimizer, dataloader, z_size, n_epochs, t
 
 
     # Save training generator samples
-    with open('train_samples.pkl', 'wb') as f:
-        pkl.dump(samples, f)
-    
+    if sample_generated:
+        with open('train_samples.pkl', 'wb') as f:
+            pkl.dump(samples, f)
+        
 
     # finally return losses
     return losses
@@ -208,15 +210,17 @@ def train(args):
 
     losses = run_training(D, G, d_optimizer, g_optimizer, dataloader, 
         z_size=z_size, n_epochs=n_epochs, train_on_gpu=torch.cuda.is_available(),
-        model_path=args.model)
+        model_path=args.model, sample_generated=args.prevgen)
+    
     
     display.plot_training_losses(losses)
 
-    with open('train_samples.pkl', 'rb') as f:
-        samples = pkl.load(f)
+    if args.prevgen:
+        with open('train_samples.pkl', 'rb') as f:
+            samples = pkl.load(f)
 
-    # view samples from the last epoch of training
-    display.view_samples(facedata.postprocess(samples[-1]))
+        # view samples from the last epoch of training
+        display.view_samples(facedata.postprocess(samples[-1]))
 
     print('Done!')
 
@@ -320,7 +324,8 @@ parser_train.add_argument('-model', type=str, default='model.pth',
 # respectively. In addition, they create default values of False and True respectively.
 parser_train.add_argument('-previn', action='store_true', 
     help='If present, the input data preview will be displayed before training.')
-
+parser_train.add_argument('-no-samples', dest='prevgen', action='store_false',
+    help='Disables the preview of images generated while training.')
 parser_train.set_defaults(func=train)
 
 # create the parser for the "bar" command
@@ -344,7 +349,7 @@ parser_gpu.set_defaults(gpu=torch.cuda.is_available())
 parser_gen.set_defaults(func=generate)
 
 #args = parser.parse_args("train -lr 0.0001 -epochs=1 -imsize=64 -model z:/model.pth".split())
-args = parser.parse_args("train -lr 0.001 -epochs=1 -imsize=32 -model z:/model.pth".split())
+args = parser.parse_args("train -lr 0.001 -epochs=1 -imsize=32 -model z:/model.pth -no-samples".split())
 #args = parser.parse_args("generate -n 10 -model model.pth -output z:/generated -ext=.png".split())
 #args = parser.parse_args()
 args.func(args)
