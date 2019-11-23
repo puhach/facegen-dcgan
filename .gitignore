@@ -3,3 +3,4 @@ celeba/*
 .vscode/.ropeproject/objectdb
 __pycache__/*
 oldmodel.pth
+train_samples.pkl
