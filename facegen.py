@@ -212,8 +212,8 @@ def train(args):
         z_size=z_size, n_epochs=n_epochs, train_on_gpu=torch.cuda.is_available(),
         model_path=args.model, sample_generated=args.prevgen)
     
-    
-    display.plot_training_losses(losses)
+    if args.losses:
+        display.plot_training_losses(losses)
 
     if args.prevgen:
         with open('train_samples.pkl', 'rb') as f:
@@ -326,6 +326,8 @@ parser_train.add_argument('-previn', action='store_true',
     help='If present, the input data preview will be displayed before training.')
 parser_train.add_argument('-no-samples', dest='prevgen', action='store_false',
     help='Disables the preview of images generated while training.')
+parser_train.add_argument('-losses', action='store_true',
+    help='Activates plotting of the learning curves.')
 parser_train.set_defaults(func=train)
 
 # create the parser for the "bar" command
@@ -349,7 +351,7 @@ parser_gpu.set_defaults(gpu=torch.cuda.is_available())
 parser_gen.set_defaults(func=generate)
 
 #args = parser.parse_args("train -lr 0.0001 -epochs=1 -imsize=64 -model z:/model.pth".split())
-args = parser.parse_args("train -lr 0.001 -epochs=1 -imsize=32 -model z:/model.pth -no-samples".split())
-#args = parser.parse_args("generate -n 10 -model model.pth -output z:/generated -ext=.png".split())
+#args = parser.parse_args("train -lr 0.001 -epochs=1 -imsize=32 -model z:/model.pth -losses".split())
+args = parser.parse_args("generate -n 10 -model model.pth -output z:/generated -ext=.png".split())
 #args = parser.parse_args()
 args.func(args)
