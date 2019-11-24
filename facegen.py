@@ -193,7 +193,7 @@ def train(args):
 
     print("Loading data...")
 
-    dataloader = facedata.get_data_loader(batch_size=64, image_size=args.imsize, data_dir='celeba')
+    dataloader = facedata.get_data_loader(batch_size=args.batch_size, image_size=args.imsize, data_dir='celeba')
 
     if args.previn:
         display.preview_input(dataloader, 20)
@@ -318,6 +318,7 @@ parser_train.add_argument('-imsize', type=validate_image_size, required=True,
     help='The size of input and output images. Must be a single value, a power of 2.')
 parser_train.add_argument('-epochs', type=validate_positive_int, default=2, help='The number of epochs to train for.')
 parser_train.add_argument('-lr', type=validate_positive_float, default=0.001, help='The learning rate.')
+parser_train.add_argument('-batch', dest='batch_size', type=validate_positive_int, default=64, help='The batch size. Default is 64.')
 parser_train.add_argument('-model', type=str, default='model.pth',
     help='The path to a file where the model artifact will be saved. If omitted, defaults to model.pth.')
 # 'store_true' and 'store_false' - These are special cases of 'store_const' used for storing the values True and False 
@@ -351,7 +352,7 @@ parser_gpu.set_defaults(gpu=torch.cuda.is_available())
 parser_gen.set_defaults(func=generate)
 
 #args = parser.parse_args("train -lr 0.0001 -epochs=1 -imsize=64 -model z:/model.pth".split())
-#args = parser.parse_args("train -lr 0.001 -epochs=1 -imsize=32 -model z:/model.pth -losses".split())
-args = parser.parse_args("generate -n 10 -model model.pth -output z:/generated -ext=.png".split())
+args = parser.parse_args("train -lr 0.001 -epochs=1 -imsize=32 -model z:/model.pth -losses".split())
+#args = parser.parse_args("generate -n 10 -model model.pth -output z:/generated -ext=.png".split())
 #args = parser.parse_args()
 args.func(args)
