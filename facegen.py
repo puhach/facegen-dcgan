@@ -210,8 +210,8 @@ def train(args):
     D, G = build_network(image_size=args.imsize, d_conv_dim=64, d_conv_depth=4, g_conv_dim=64, g_conv_depth=4, z_size=z_size)
 
     # Create optimizers for the discriminator D and generator G
-    d_optimizer = optim.Adam(D.parameters(), lr=0.0002, betas=[0.5, 0.999])
-    g_optimizer = optim.Adam(G.parameters(), lr=0.0002, betas=[0.5, 0.999])
+    d_optimizer = optim.Adam(D.parameters(), lr=args.lr, betas=[0.5, 0.999])
+    g_optimizer = optim.Adam(G.parameters(), lr=args.lr, betas=[0.5, 0.999])
     
     n_epochs = args.epochs
 
@@ -324,7 +324,8 @@ parser_train = subparsers.add_parser('train')
 parser_train.add_argument('-imsize', type=validate_image_size, required=True, 
     help='The size of input and output images. Must be a single value, a power of 2.')
 parser_train.add_argument('-epochs', type=validate_positive_int, default=2, help='The number of epochs to train for.')
-parser_train.add_argument('-lr', type=validate_positive_float, default=0.001, help='The learning rate.')
+parser_train.add_argument('-lr', type=validate_positive_float, default=0.0002, 
+    help='The learning rate. Default is 0.0002.')
 parser_train.add_argument('-batch', dest='batch_size', type=validate_positive_int, default=64, help='The batch size. Default is 64.')
 parser_train.add_argument('-zsize', dest='z_size', type=validate_positive_int, default=128, 
     help='The latent vector size. Default is 128.')
