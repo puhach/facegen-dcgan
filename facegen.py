@@ -210,8 +210,8 @@ def train(args):
     D, G = build_network(image_size=args.imsize, d_conv_dim=64, d_conv_depth=4, g_conv_dim=64, g_conv_depth=4, z_size=z_size)
 
     # Create optimizers for the discriminator D and generator G
-    d_optimizer = optim.Adam(D.parameters(), lr=args.lr, betas=[0.5, 0.999])
-    g_optimizer = optim.Adam(G.parameters(), lr=args.lr, betas=[0.5, 0.999])
+    d_optimizer = optim.Adam(D.parameters(), lr=args.lr, betas=[args.beta1, args.beta2])
+    g_optimizer = optim.Adam(G.parameters(), lr=args.lr, betas=[args.beta2, args.beta2])
     
     n_epochs = args.epochs
 
@@ -326,6 +326,10 @@ parser_train.add_argument('-imsize', type=validate_image_size, required=True,
 parser_train.add_argument('-epochs', type=validate_positive_int, default=2, help='The number of epochs to train for.')
 parser_train.add_argument('-lr', type=validate_positive_float, default=0.0002, 
     help='The learning rate. Default is 0.0002.')
+parser_train.add_argument('-beta1', type=validate_positive_float, default=0.5,
+    help='The exponential decay rate for the first moment estimates. Default is 0.5.')
+parser_train.add_argument('-beta2', type=validate_positive_float, default=0.999,
+    help='The exponential decay rate for the second moment estimates. Default is 0.999.')
 parser_train.add_argument('-batch', dest='batch_size', type=validate_positive_int, default=64, help='The batch size. Default is 64.')
 parser_train.add_argument('-zsize', dest='z_size', type=validate_positive_int, default=128, 
     help='The latent vector size. Default is 128.')
@@ -362,7 +366,7 @@ parser_gpu.set_defaults(gpu=torch.cuda.is_available())
 parser_gen.set_defaults(func=generate)
 
 #args = parser.parse_args("train -lr 0.0001 -epochs=1 -imsize=64 -model z:/model.pth".split())
-args = parser.parse_args("train -lr 0.001 -epochs=1 -imsize=32 -model z:/model.pth -no-samples -losses -zsize=16 -batch=32".split())
+args = parser.parse_args("train -epochs=1 -imsize=32 -model z:/model.pth -no-samples -losses -zsize=16 -batch=32".split())
 #args = parser.parse_args("generate -n 10 -model model.pth -output z:/generated -ext=.png".split())
 #args = parser.parse_args()
 args.func(args)
