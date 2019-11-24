@@ -172,8 +172,8 @@ def run_training(D, G, d_optimizer, g_optimizer, dataloader, z_size, n_epochs, t
                 losses.append((d_loss.item(), g_loss.item()))
                 
                 # print discriminator and generator loss
-                print('Epoch [{:5d}/{:5d}] | d_loss: {:6.4f} | g_loss: {:6.4f}'.format(
-                        epoch+1, n_epochs, d_loss.item(), g_loss.item()))
+                print('Epoch [{:5d}/{:5d}] | Batch [{:5d}/{:5d}] | d_loss: {:6.4f} | g_loss: {:6.4f}'.format(
+                        epoch+1, n_epochs, batch_i, len(dataloader), d_loss.item(), g_loss.item()))
 
 
         # After each epoch generate and save sample (fake images)
@@ -366,7 +366,7 @@ parser_gpu.set_defaults(gpu=torch.cuda.is_available())
 parser_gen.set_defaults(func=generate)
 
 #args = parser.parse_args("train -lr 0.0001 -epochs=1 -imsize=64 -model z:/model.pth".split())
-args = parser.parse_args("train -epochs=1 -imsize=32 -model z:/model.pth -no-samples -losses -zsize=16 -batch=32".split())
+#args = parser.parse_args("train -epochs=1 -imsize=32 -model z:/model.pth -no-samples -losses -zsize=16 -batch=32".split())
 #args = parser.parse_args("generate -n 10 -model model.pth -output z:/generated -ext=.png".split())
-#args = parser.parse_args()
+args = parser.parse_args()
 args.func(args)
