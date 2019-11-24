@@ -106,18 +106,26 @@ def run_training(D, G, d_optimizer, g_optimizer, dataloader, z_size, n_epochs, t
     else:
         print('CUDA is not available. Training on CPU...')
 
-    # keep track of loss and generated, "fake" samples
-    samples = []
-    losses = []
 
-    # Get some fixed data for sampling. These are images that are held
-    # constant throughout training, and allow us to inspect the model's performance
-    sample_size=16
-    fixed_z = np.random.uniform(-1, 1, size=(sample_size, z_size))
-    fixed_z = torch.from_numpy(fixed_z).float()
-    # move z to GPU if available
-    if train_on_gpu:
-        fixed_z = fixed_z.cuda()
+    # Check if the user asked to sample generated images
+    if sample_generated: 
+
+        # Get some fixed data for sampling. These are images that are held
+        # constant throughout training, and allow us to inspect the model's performance.
+        
+        samples = []    # keep track of the generated samples
+        
+        sample_size=16
+        
+        fixed_z = np.random.uniform(-1, 1, size=(sample_size, z_size))
+        fixed_z = torch.from_numpy(fixed_z).float()
+        
+        # Move z to GPU if available
+        if train_on_gpu:
+            fixed_z = fixed_z.cuda()
+
+
+    losses = [] # keep track of the training loss    
 
     # epoch training loop
     for epoch in range(n_epochs):
@@ -168,18 +176,17 @@ def run_training(D, G, d_optimizer, g_optimizer, dataloader, z_size, n_epochs, t
                         epoch+1, n_epochs, d_loss.item(), g_loss.item()))
 
 
-        # after each epoch generate and save sample (fake images)
-        G.eval() # for generating samples
-        samples_z = G(fixed_z)
-        samples.append(samples_z)
-        G.train() # back to training mode
+        # After each epoch generate and save sample (fake images)
+        if sample_generated:            
+            G.eval() # for generating samples
+            samples_z = G(fixed_z)
+            samples.append(samples_z)
+            G.train() # back to training mode
 
     
-    # save the trained model
-    checkpoint.save(model_path, D, G)
+    checkpoint.save(model_path, D, G) # save the trained model
 
-
-    # Save training generator samples
+    # If needed, save the generated samples
     if sample_generated:
         with open('train_samples.pkl', 'wb') as f:
             pkl.dump(samples, f)
@@ -354,7 +361,7 @@ parser_gpu.set_defaults(gpu=torch.cuda.is_available())
 parser_gen.set_defaults(func=generate)
 
 #args = parser.parse_args("train -lr 0.0001 -epochs=1 -imsize=64 -model z:/model.pth".split())
-args = parser.parse_args("train -lr 0.001 -epochs=1 -imsize=32 -model z:/model.pth -losses -zsize=16 -batch=32".split())
+args = parser.parse_args("train -lr 0.001 -epochs=1 -imsize=32 -model z:/model.pth -no-samples -losses -zsize=16 -batch=32".split())
 #args = parser.parse_args("generate -n 10 -model model.pth -output z:/generated -ext=.png".split())
 #args = parser.parse_args()
 args.func(args)
