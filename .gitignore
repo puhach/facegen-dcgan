@@ -4,3 +4,4 @@ celeba/*
 __pycache__/*
 oldmodel.pth
 train_samples.pkl
+more-celeba/*
