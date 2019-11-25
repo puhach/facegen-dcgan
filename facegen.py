@@ -211,7 +211,7 @@ def train(args):
 
     # Create optimizers for the discriminator D and generator G
     d_optimizer = optim.Adam(D.parameters(), lr=args.lr, betas=[args.beta1, args.beta2])
-    g_optimizer = optim.Adam(G.parameters(), lr=args.lr, betas=[args.beta2, args.beta2])
+    g_optimizer = optim.Adam(G.parameters(), lr=args.lr, betas=[args.beta1, args.beta2])
     
     n_epochs = args.epochs
 
@@ -366,7 +366,7 @@ parser_gpu.set_defaults(gpu=torch.cuda.is_available())
 parser_gen.set_defaults(func=generate)
 
 #args = parser.parse_args("train -lr 0.0001 -epochs=1 -imsize=64 -model z:/model.pth".split())
-#args = parser.parse_args("train -epochs=1 -imsize=32 -model z:/model.pth -no-samples -losses -zsize=16 -batch=32".split())
+#args = parser.parse_args("train -epochs=1 -imsize=32 -model z:/model.pth".split())
 #args = parser.parse_args("generate -n 10 -model model.pth -output z:/generated -ext=.png".split())
 args = parser.parse_args()
 args.func(args)
