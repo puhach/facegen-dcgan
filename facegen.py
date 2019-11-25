@@ -360,7 +360,7 @@ parser_gen.add_argument('-ext', type=str, default='.jpg',
 parser_gpu = parser_gen.add_mutually_exclusive_group(required=False)
 parser_gpu.add_argument('-gpu', dest='gpu', action='store_true',
     help='Use GPU acceleration for generating images. Set by default if GPU is available.')
-parser_gpu.add_argument('-no-gpu', dest='gpu', action='store_false',
+parser_gpu.add_argument('-cpu', dest='gpu', action='store_false',
     help='Do not use GPU acceleration for generating images.')
 parser_gpu.set_defaults(gpu=torch.cuda.is_available())
 parser_gen.set_defaults(func=generate)
