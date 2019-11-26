@@ -104,7 +104,7 @@ def run_training(D, G, d_optimizer, g_optimizer, dataloader, z_size, n_epochs, t
         D.cuda()
         G.cuda()
     else:
-        print('CUDA is not available. Training on CPU...')
+        print('Training on CPU...')
 
 
     # Check if the user asked to sample generated images
@@ -216,7 +216,7 @@ def train(args):
     n_epochs = args.epochs
 
     losses = run_training(D, G, d_optimizer, g_optimizer, dataloader, 
-        z_size=z_size, n_epochs=n_epochs, train_on_gpu=torch.cuda.is_available(),
+        z_size=z_size, n_epochs=n_epochs, train_on_gpu=args.gpu,
         model_path=args.model, sample_generated=args.prevgen)
     
     if args.losses:
@@ -343,6 +343,12 @@ parser_train.add_argument('-no-samples', dest='prevgen', action='store_false',
     help='Disables the preview of images generated while training.')
 parser_train.add_argument('-losses', action='store_true',
     help='Activates plotting of the learning curves.')
+parser_gpu = parser_train.add_mutually_exclusive_group(required=False)
+parser_gpu.add_argument('-gpu', dest='gpu', action='store_true',
+    help='Use GPU acceleration for training. Set by default if GPU is available.')
+parser_gpu.add_argument('-cpu', dest='gpu', action='store_false',
+    help='Do not use GPU acceleration for training. Set by default if no GPU is available.')
+parser_gpu.set_defaults(gpu=torch.cuda.is_available())    
 parser_train.set_defaults(func=train)
 
 # create the parser for the "bar" command
@@ -361,12 +367,12 @@ parser_gpu = parser_gen.add_mutually_exclusive_group(required=False)
 parser_gpu.add_argument('-gpu', dest='gpu', action='store_true',
     help='Use GPU acceleration for generating images. Set by default if GPU is available.')
 parser_gpu.add_argument('-cpu', dest='gpu', action='store_false',
-    help='Do not use GPU acceleration for generating images.')
+    help='Do not use GPU acceleration for generating images. Set by default if no GPU is available.')
 parser_gpu.set_defaults(gpu=torch.cuda.is_available())
 parser_gen.set_defaults(func=generate)
 
 #args = parser.parse_args("train -lr 0.0001 -epochs=1 -imsize=64 -model z:/model.pth".split())
-#args = parser.parse_args("train -epochs=1 -imsize=32 -model z:/model.pth".split())
+#args = parser.parse_args("train -epochs=1 -imsize=32 -model z:/model.pth -cpu".split())
 #args = parser.parse_args("generate -n 10 -model model.pth -output z:/generated -ext=.png".split())
 args = parser.parse_args()
 args.func(args)
