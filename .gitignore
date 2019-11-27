@@ -1,7 +1,7 @@
 celeba/*
-.vscode/.ropeproject/config.py
-.vscode/.ropeproject/objectdb
+.vscode/
 __pycache__/*
 oldmodel.pth
 train_samples.pkl
 more-celeba/*
+
