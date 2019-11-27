@@ -42,4 +42,8 @@ conda install imageio
 Imageio is a Python library that provides an easy interface to read and write a wide range of image data.
 
 
+## Download the Dataset
 
+The network was trained on preprocessed pictures from CelebFaces Attributes Dataset (CelebA). Each of the CelebA images has been cropped to remove parts of the image that don't include a face and subsequently resized to 64x64 resolution.
+
+You can download it by clicking [here](https://s3.amazonaws.com/video.udacity-data.com/topher/2018/November/5be7eb6f_processed-celeba-small/processed-celeba-small.zip).
