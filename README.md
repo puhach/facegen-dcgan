@@ -55,7 +55,7 @@ You can download it by clicking [here](https://s3.amazonaws.com/video.udacity-da
 To start training a model, specify the number of epochs, the image size, and the path where to store the model artifact:
 
 ```
-python facegen.py train -epochs=10 -imsize=64 -model=z:/model.pth
+python facegen.py train -epochs=10 -imsize=64 -model=mymodels/model.pth
 ```
 
 The table below describes various parameters to tune the model and the training process.
@@ -79,3 +79,24 @@ no-samples | [Optional] Disables the preview of images generated while training.
 losses | [Optional] Activates plotting of the learning curves. | -losses
 gpu | [Optional] Use GPU acceleration for training. Set by default if GPU is available. | -gpu
 cpu | [Optional] Instructs not to use GPU acceleration for training. Set by default if no GPU is available. | -cpu
+
+
+# Generate
+
+In order to generate images with a pretrained model, specify the number of images, the output directory where to place the images, and the path to a file where the trained model is saved:
+
+```
+python facegen.py generate -n=10 -output=generated -model=artifacts/model-33-32.pth
+
+```
+
+The table below describes various parameters allowing to control image generation.
+
+Parameter | Meaning | Example
+------------ | ------ |-------
+n | [Required] Specifies the number of images to generate. | -n=20
+output | [Required] The path to the directory where the generated images have to be stored. | -output=my/generated/images
+model | [Optional] The path to the file containing the model artifact. If omitted, defaults to model.pth. | -model=mymodel.pth
+ext | [Optional] Allows to specify the generated image format. Defaults to .jpg. | -ext=.png
+gpu | [Optional] Use GPU acceleration for generating images. Set by default if GPU is available. | -gpu
+cpu | [Optional] Do not use GPU acceleration for generating images. Set by default if no GPU is available. | -cpu
