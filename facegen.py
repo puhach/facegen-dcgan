@@ -207,7 +207,11 @@ def train(args):
    
     z_size = args.z_size
 
-    D, G = build_network(image_size=args.imsize, d_conv_dim=64, d_conv_depth=4, g_conv_dim=64, g_conv_depth=4, z_size=z_size)
+    #D, G = build_network(image_size=args.imsize, d_conv_dim=64, d_conv_depth=4, g_conv_dim=64, g_conv_depth=4, z_size=z_size)
+    D, G = build_network(image_size=args.imsize, 
+        d_conv_dim=args.d_conv_dim, d_conv_depth=args.d_conv_depth, 
+        g_conv_dim=args.g_conv_dim, g_conv_depth=args.g_conv_depth, 
+        z_size=z_size)
 
     # Create optimizers for the discriminator D and generator G
     d_optimizer = optim.Adam(D.parameters(), lr=args.lr, betas=[args.beta1, args.beta2])
@@ -333,6 +337,14 @@ parser_train.add_argument('-beta2', type=validate_positive_float, default=0.999,
 parser_train.add_argument('-batch', dest='batch_size', type=validate_positive_int, default=64, help='The batch size. Default is 64.')
 parser_train.add_argument('-zsize', dest='z_size', type=validate_positive_int, default=128, 
     help='The latent vector size. Default is 128.')
+parser_train.add_argument('-d-conv-dim', type=validate_positive_int, default=64,
+    help='The depth of the first convolutional layer of the discriminator. Default is 64.')
+parser_train.add_argument('-d-conv-depth', type=validate_positive_int, default=4,
+    help='The number of convolutional layers of the discriminator. Default is 4.')
+parser_train.add_argument('-g-conv-dim', type=validate_positive_int, default=64,
+    help='The depth of the inputs to the *last* transpose convolutional layer of the generator. Default is 64.')
+parser_train.add_argument('-g-conv-depth', type=validate_positive_int, default=4,
+    help='The number of convolutional layers of the generator. Default is 4.')
 parser_train.add_argument('-model', type=str, default='model.pth',
     help='The path to a file where the model artifact will be saved. If omitted, defaults to model.pth.')
 # 'store_true' and 'store_false' - These are special cases of 'store_const' used for storing the values True and False 
@@ -372,7 +384,7 @@ parser_gpu.set_defaults(gpu=torch.cuda.is_available())
 parser_gen.set_defaults(func=generate)
 
 #args = parser.parse_args("train -lr 0.0001 -epochs=1 -imsize=64 -model z:/model.pth".split())
-#args = parser.parse_args("train -epochs=1 -imsize=32 -model z:/model.pth -cpu".split())
+#args = parser.parse_args("train -epochs=1 -imsize=32 -model z:/model.pth -d-conv-dim=65 -d-conv-depth=3 -g-conv-dim=70 -g-conv-depth=4 -cpu".split())
 #args = parser.parse_args("generate -n 10 -model model.pth -output z:/generated -ext=.png".split())
 args = parser.parse_args()
 args.func(args)
