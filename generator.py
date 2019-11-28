@@ -55,7 +55,7 @@ class Generator(nn.Module):
         # and the depth of transpose convolutions
         self.initial_size = target_size // (2**depth)
         self.in_channels = conv_dim * (2**(depth-1))
-        assert self.initial_size >= 2, "Decrease the depth of the network."
+        assert self.initial_size >= 2, "Decrease the depth of the network or increase the image size."
                 
         self.fc = nn.Linear(in_features=z_size, out_features=self.in_channels*self.initial_size**2)
         
