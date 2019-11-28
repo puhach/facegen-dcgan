@@ -384,7 +384,7 @@ parser_gpu.set_defaults(gpu=torch.cuda.is_available())
 parser_gen.set_defaults(func=generate)
 
 #args = parser.parse_args("train -lr 0.0001 -epochs=1 -imsize=64 -model z:/model.pth".split())
-#args = parser.parse_args("train -epochs=1 -imsize=32 -model z:/model.pth -d-conv-dim=65 -d-conv-depth=3 -g-conv-dim=70 -g-conv-depth=4 -cpu".split())
+#args = parser.parse_args("train -epochs=1 -imsize=32 -model=./mymodel.pth -d-conv-dim=65 -d-conv-depth=3 -g-conv-dim=70 -g-conv-depth=4 -cpu".split())
 #args = parser.parse_args("generate -n 10 -model model.pth -output z:/generated -ext=.png".split())
 args = parser.parse_args()
 args.func(args)

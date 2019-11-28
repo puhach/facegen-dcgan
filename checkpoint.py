@@ -12,6 +12,10 @@ def save(filename, D, G):
     :param G: The generator.
     """
     
+    directory = os.path.dirname(filename)
+    if directory != '':
+        os.makedirs(directory, exist_ok=True)   # Python 3.2+
+
     torch.save(
         {
             'D_init_params': D.get_init_params(),
