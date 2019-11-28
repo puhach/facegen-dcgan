@@ -1,7 +1,9 @@
 # Face Generator
 This project generates new faces using a Deep Convolutional Generative Adversarial Network (DCGAN). 
 
-![Generated Samples](./generated_samples_preview.png)
+<div align="center">
+<img src="./generated_samples_preview.png">
+</div>
 
 The model succeeds in reaching equilibrium between the generator and the discriminator. After several epochs of training it generates faces which are clearly recognizable.
 
@@ -73,7 +75,7 @@ d-conv-dim | [Optional] The depth of the first convolutional layer of the discri
 d-conv-depth | [Optional] The number of convolutional layers of the discriminator. Default is 4. | -d-conv-depth=3
 g-conv-dim | [Optional] The depth of the inputs to the *last* transpose convolutional layer of the generator. Default is 64. | -g-conv-dim=128
 g-conv-depth | [Optional] The number of convolutional layers of the generator. Default is 4. | -g-conv-depth=5
-model | [Optional] The path to a file where the model artifact will be saved. If omitted, defaults to model.pth. | -model=models/mymodel.pth
+model | [Optional] The path to a file where the model artifact will be saved. If omitted, defaults to model.pth. | -model=models/my.pth
 previn | [Optional] If present, the input data preview will be displayed before training. | -previn
 no-samples | [Optional] Disables the preview of images generated while training. | -no-samples
 losses | [Optional] Activates plotting of the learning curves. | -losses
@@ -95,7 +97,7 @@ The table below describes various parameters allowing to control image generatio
 Parameter | Meaning | Example
 ------------ | ------ |-------
 n | [Required] Specifies the number of images to generate. | -n=20
-output | [Required] The path to the directory where the generated images have to be stored. | -output=my/generated/images
+output | [Required] The path to the directory where the generated images have to be stored. | -output=generated/images
 model | [Optional] The path to the file containing the model artifact. If omitted, defaults to model.pth. | -model=mymodel.pth
 ext | [Optional] Allows to specify the generated image format. Defaults to .jpg. | -ext=.png
 gpu | [Optional] Use GPU acceleration for generating images. Set by default if GPU is available. | -gpu
