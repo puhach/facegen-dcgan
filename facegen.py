@@ -368,9 +368,9 @@ parser_gen = subparsers.add_parser('generate')
 parser_gen.add_argument('-n', type=validate_positive_int, required=True,
     help='Specifies the number of images to generate.')
 parser_gen.add_argument('-model', type=str, default='model.pth',
-    help='The path to a file containing the model artifact. If omitted, defaults to model.pth.')
+    help='The path to the file containing the model artifact. If omitted, defaults to model.pth.')
 parser_gen.add_argument('-output', type=str, required=True, 
-    help='The path to the file where the generated image has to be stored.')
+    help='The path to the directory where the generated images have to be stored.')
 parser_gen.add_argument('-ext', type=str, default='.jpg', 
     help='Allows to specify the generated image format. Defaults to .jpg.')
 #parser_gen.add_argument('-gpu', default=torch.cuda.is_available(), action='store_true',
