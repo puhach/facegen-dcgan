@@ -102,3 +102,8 @@ model | [Optional] The path to the file containing the model artifact. If omitte
 ext | [Optional] Allows to specify the generated image format. Defaults to .jpg. | -ext=.png
 gpu | [Optional] Use GPU acceleration for generating images. Set by default if GPU is available. | -gpu
 cpu | [Optional] Do not use GPU acceleration for generating images. Set by default if no GPU is available. | -cpu
+
+
+# Acknowledgements
+
+The project extends the assignment from [Udacity Deep Learning nanodegree](https://classroom.udacity.com/nanodegrees/nd101/parts/2ea78ff8-befd-4046-b06e-5327871b0748/modules/8f7e835f-8b60-416a-a0d7-596272f10abc/lessons/b2dc488f-9450-423c-9475-d9d28bbe8394/concepts/e82fd904-f919-4ea9-bc67-12c196d8e986) and uses ideas from the original [DCGAN paper](https://arxiv.org/pdf/1511.06434.pdf).
