@@ -61,12 +61,12 @@ class Discriminator(nn.Module):
             in_channels = conv_dim  # new number of input feature maps
             conv_dim *= 2 # new number of output feature maps
             image_size = (image_size - 4 + 2*1)//2 + 1 # new image size
-        
-        ## output layer (could use a fully connected layer instead - not sure what is better)
-        #conv_blocks.append(conv(in_channels=in_channels, out_channels=1, kernel_size=image_size, stride=1, padding=0, 
-        #                       activation = nn.Sigmoid(), batch_norm = False))
+                
         self.conv_layers = nn.Sequential(*conv_blocks)
         
+        # output layer (could use a convolutional layer instead - not sure what is better)
+        #conv_blocks.append(conv(in_channels=in_channels, out_channels=1, kernel_size=image_size, stride=1, padding=0, 
+        #                       activation = nn.Sigmoid(), batch_norm = False))
         self.out_layer = nn.Linear(in_features=in_channels*image_size*image_size, out_features=1)
 
 
@@ -83,12 +83,9 @@ class Discriminator(nn.Module):
         # 4. (256,4,4) -> (512,2,2)
         # 5. (512,2,2) -> (1,1,1)
         x = self.conv_layers(x)
-        #print("x':", x.shape)
         #x = x.view(x.shape[0], 1) # remove extra dimensions for the convolutional output layer
         x = x.view(x.shape[0], -1) # flatten (in case of fully connected output layer)
-        #x = F.sigmoid(self.out_layer(x))
         x = torch.sigmoid(self.out_layer(x))
-        #print("squeezed:", x.shape)
         return x
 
     def get_init_params(self):

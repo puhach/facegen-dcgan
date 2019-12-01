@@ -18,12 +18,9 @@ def preview_input(dataloader, plot_size):
     fig = plt.figure(num = 'Training Data Preview', figsize=(12, 4))
     
     plot_size = min(len(images), plot_size)
-    #plot_size = len(images)
-    #n = int(math.sqrt(plot_size))
 
     for idx in np.arange(plot_size):
         ax = fig.add_subplot(2, plot_size/2, idx+1, xticks=[], yticks=[])
-        #ax = fig.add_subplot(n, int(math.ceil(plot_size/n)), idx+1, xticks=[], yticks=[])
         ax.imshow(np.transpose(images[idx], (1, 2, 0)))
     
     plt.show()
@@ -59,14 +56,7 @@ def view_samples(samples):
 
     for i, sample in enumerate(samples):
         ax = fig.add_subplot(nrows, ncols, i+1, xticks=[], yticks=[])
-        #ax = fig.add_subplot(n, int(math.ceil(plot_size/n)), idx+1, xticks=[], yticks=[])
-        #img = sample.detach().cpu().numpy()
-        #img = np.transpose(img, (1, 2, 0))
-        #img = ((img + 1)*255 / (2)).astype(np.uint8)
-        #ax.imshow(np.transpose(images[idx], (1, 2, 0)))
-        #ax.imshow(img.reshape((32,32,3)))
         ax.imshow(sample)
-
 
     plt.show()
 

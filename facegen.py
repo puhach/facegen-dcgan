@@ -28,7 +28,6 @@ def weights_init_normal(m):
     
     # Apply initial weights to convolutional and linear layers
     if isinstance(m, nn.Linear) or isinstance(m, nn.Conv2d) or isinstance(m, nn.ConvTranspose2d):
-        #print(classname)
         if hasattr(m, 'weight') and m.weight is not None:
             nn.init.normal_(m.weight, mean=0, std=0.02)
         if hasattr(m, 'bias') and m.bias is not None:
@@ -55,10 +54,6 @@ def build_network(image_size, z_size, d_conv_dim, d_conv_depth, g_conv_dim, g_co
     D.apply(weights_init_normal)
     G.apply(weights_init_normal)
 
-    #print(D)
-    #print()
-    #print(G)
-    
     return D, G
 
 
@@ -207,7 +202,6 @@ def train(args):
    
     z_size = args.z_size
 
-    #D, G = build_network(image_size=args.imsize, d_conv_dim=64, d_conv_depth=4, g_conv_dim=64, g_conv_depth=4, z_size=z_size)
     D, G = build_network(image_size=args.imsize, 
         d_conv_dim=args.d_conv_dim, d_conv_depth=args.d_conv_depth, 
         g_conv_dim=args.g_conv_dim, g_conv_depth=args.g_conv_depth, 
@@ -327,14 +321,16 @@ subparsers = parser.add_subparsers()
 parser_train = subparsers.add_parser('train')
 parser_train.add_argument('-imsize', type=validate_image_size, required=True, 
     help='The size of input and output images. Must be a single value, a power of 2.')
-parser_train.add_argument('-epochs', type=validate_positive_int, default=2, help='The number of epochs to train for.')
+parser_train.add_argument('-epochs', type=validate_positive_int, default=2, 
+    help='The number of epochs to train for.')
 parser_train.add_argument('-lr', type=validate_positive_float, default=0.0002, 
     help='The learning rate. Default is 0.0002.')
 parser_train.add_argument('-beta1', type=validate_positive_float, default=0.5,
     help='The exponential decay rate for the first moment estimates. Default is 0.5.')
 parser_train.add_argument('-beta2', type=validate_positive_float, default=0.999,
     help='The exponential decay rate for the second moment estimates. Default is 0.999.')
-parser_train.add_argument('-batch', dest='batch_size', type=validate_positive_int, default=64, help='The batch size. Default is 64.')
+parser_train.add_argument('-batch', dest='batch_size', type=validate_positive_int, default=64, 
+    help='The batch size. Default is 64.')
 parser_train.add_argument('-zsize', dest='z_size', type=validate_positive_int, default=128, 
     help='The latent vector size. Default is 128.')
 parser_train.add_argument('-d-conv-dim', type=validate_positive_int, default=64,
