@@ -1,5 +1,6 @@
 # Face Generator
-This project generates new faces using a Deep Convolutional Generative Adversarial Network (DCGAN). 
+
+Imagine you need a new face for a game, cartoon, or advertisement. It doesn't need to look real, but it has to be unique. Creating such a face is a time-consuming task requiring manual work. This project automatically generates new faces using a Deep Convolutional Generative Adversarial Network (DCGAN). 
 
 <div align="center">
 <img src="./generated_samples_preview.png">
